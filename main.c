@@ -1,12 +1,14 @@
 #include <stdbool.h>
 #include "stm8s.h"
 #include "stm8s_gpio.h"
+#include "stm8s_adc1.h"
 #include "gpio_config.h"
 
 #define DELAY_1SEC 250000
 
 uint8_t DisplayNumberData[4];
 uint8_t DisplayNumberPos = sizeof(DisplayNumberData) * 3;
+uint16_t voltage[4];
 
 void Delay(uint32_t nCount) {
 	while (nCount != 0) {
@@ -107,6 +109,8 @@ void main(void) {
 	GPIO_Init(Selector_LiFe, GPIO_MODE_IN_PU_NO_IT);
 	GPIO_Init(Selector_2A, GPIO_MODE_IN_PU_NO_IT);
 
+	ADC1_DeInit();
+
 	while (1) {
 		// Status LED off
 		GPIO_WriteHigh(Status_LED_Red);
@@ -155,11 +159,117 @@ void main(void) {
 		GPIO_WriteHigh(LED_4S);
 		Delay(DELAY_1SEC / 2);
 
-		// Decimal number output
-		DisplayNumberSetup(3096);
+		// Decimal number output for ADC1 channel3
+		GPIO_WriteLow(LED_1S);
+		Delay(DELAY_1SEC / 2);
+		// Cells LEDs off
+		GPIO_WriteHigh(LED_1S);
+		GPIO_WriteHigh(LED_2S);
+		GPIO_WriteHigh(LED_3S);
+		GPIO_WriteHigh(LED_4S);
+		Delay(DELAY_1SEC / 4);
+
+		ADC1_Init(ADC1_CONVERSIONMODE_SINGLE,
+					ADC1_CHANNEL_3,
+					ADC1_PRESSEL_FCPU_D10,
+					ADC1_EXTTRIG_TIM, DISABLE,
+					ADC1_ALIGN_RIGHT,
+					ADC1_SCHMITTTRIG_CHANNEL3, DISABLE);
+		ADC1_StartConversion();
+		while (!ADC1_GetFlagStatus(ADC1_FLAG_EOC)) {
+		}
+		voltage[0] = ADC1_GetConversionValue();
+		ADC1_ClearFlag(ADC1_FLAG_EOC);
+
+		DisplayNumberSetup(voltage[0]);
 		while (DisplayNumberShowLed()) {
 			Delay(DELAY_1SEC / 4);
 		}
+		Delay(DELAY_1SEC / 2);
+
+		// Decimal number output for ADC1 channel4
+		GPIO_WriteLow(LED_2S);
+		Delay(DELAY_1SEC / 2);
+		// Cells LEDs off
+		GPIO_WriteHigh(LED_1S);
+		GPIO_WriteHigh(LED_2S);
+		GPIO_WriteHigh(LED_3S);
+		GPIO_WriteHigh(LED_4S);
+		Delay(DELAY_1SEC / 4);
+
+		ADC1_Init(ADC1_CONVERSIONMODE_SINGLE,
+					ADC1_CHANNEL_4,
+					ADC1_PRESSEL_FCPU_D10,
+					ADC1_EXTTRIG_TIM, DISABLE,
+					ADC1_ALIGN_RIGHT,
+					ADC1_SCHMITTTRIG_CHANNEL4, DISABLE);
+		ADC1_StartConversion();
+		while (!ADC1_GetFlagStatus(ADC1_FLAG_EOC)) {
+		}
+		voltage[1] = ADC1_GetConversionValue();
+		ADC1_ClearFlag(ADC1_FLAG_EOC);
+
+		DisplayNumberSetup(voltage[1]);
+		while (DisplayNumberShowLed()) {
+			Delay(DELAY_1SEC / 4);
+		}
+		Delay(DELAY_1SEC / 2);
+
+		// Decimal number output for ADC1 channel5
+		GPIO_WriteLow(LED_3S);
+		Delay(DELAY_1SEC / 2);
+		// Cells LEDs off
+		GPIO_WriteHigh(LED_1S);
+		GPIO_WriteHigh(LED_2S);
+		GPIO_WriteHigh(LED_3S);
+		GPIO_WriteHigh(LED_4S);
+		Delay(DELAY_1SEC / 4);
+
+		ADC1_Init(ADC1_CONVERSIONMODE_SINGLE,
+					ADC1_CHANNEL_5,
+					ADC1_PRESSEL_FCPU_D10,
+					ADC1_EXTTRIG_TIM, DISABLE,
+					ADC1_ALIGN_RIGHT,
+					ADC1_SCHMITTTRIG_CHANNEL5, DISABLE);
+		ADC1_StartConversion();
+		while (!ADC1_GetFlagStatus(ADC1_FLAG_EOC)) {
+		}
+		voltage[2] = ADC1_GetConversionValue();
+		ADC1_ClearFlag(ADC1_FLAG_EOC);
+
+		DisplayNumberSetup(voltage[2]);
+		while (DisplayNumberShowLed()) {
+			Delay(DELAY_1SEC / 4);
+		}
+		Delay(DELAY_1SEC / 2);
+
+		// Decimal number output for ADC1 channel6
+		GPIO_WriteLow(LED_4S);
+		Delay(DELAY_1SEC / 2);
+		// Cells LEDs off
+		GPIO_WriteHigh(LED_1S);
+		GPIO_WriteHigh(LED_2S);
+		GPIO_WriteHigh(LED_3S);
+		GPIO_WriteHigh(LED_4S);
+		Delay(DELAY_1SEC / 4);
+
+		ADC1_Init(ADC1_CONVERSIONMODE_SINGLE,
+					ADC1_CHANNEL_6,
+					ADC1_PRESSEL_FCPU_D10,
+					ADC1_EXTTRIG_TIM, DISABLE,
+					ADC1_ALIGN_RIGHT,
+					ADC1_SCHMITTTRIG_CHANNEL6, DISABLE);
+		ADC1_StartConversion();
+		while (!ADC1_GetFlagStatus(ADC1_FLAG_EOC)) {
+		}
+		voltage[3] = ADC1_GetConversionValue();
+		ADC1_ClearFlag(ADC1_FLAG_EOC);
+
+		DisplayNumberSetup(voltage[3]);
+		while (DisplayNumberShowLed()) {
+			Delay(DELAY_1SEC / 4);
+		}
+		Delay(DELAY_1SEC / 2);
 	}
 }
 

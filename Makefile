@@ -5,6 +5,7 @@ LDFLAGS = -mstm8 -lstm8 --out-fmt-ihx
 
 SRCS = main.c
 SRCS += stm8s-sdcc/src/stm8s_gpio.c
+SRCS += stm8s-sdcc/src/stm8s_adc1.c
 
 OBJS = $(foreach F, $(SRCS), out/$(basename $(F)).rel)
 
