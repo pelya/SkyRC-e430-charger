@@ -1,0 +1,63 @@
+No battery
+==========
+
+Channel 0: 0.021
+Channel 1: 0.021
+Channel 3: 0.000
+Channel 4: 0.000
+Channel 5: 0.004
+Channel 6: 0.000
+
+
+Battery connected - 4S
+======================
+
+Channel 0: 0.022
+Channel 1: 0.021
+Channel 3: 0.567
+Channel 4: 0.453
+Channel 5: 0.449
+Channel 6: 0.450
+
+Battery voltage:
+1S: 4.14 V
+2S: 4.13 V
+3S: 4.12 V
+4S: 4.14 V
+
+Battery connected - 4S but XT60 disconnected
+============================================
+
+Channel 0: 0.021
+Channel 1: 0.022
+Channel 3: 0.000
+Channel 4: 0.099
+Channel 5: 0.099
+Channel 6: 0.000
+
+Battery connected - only XT60 connected
+=======================================
+
+Channel 0: 0.021
+Channel 1: 0.021
+Channel 3: 0.000
+Channel 4: 0.000
+Channel 5: 0.000
+Channel 6: 0.000
+
+
+Battery 2 connected - 4S
+========================
+
+Channel 0: 0.021
+Channel 1: 0.115
+Channel 3: 0.022
+Channel 4: 0.064
+Channel 5: 0.063
+Channel 6: 0.010
+
+Battery voltage:
+1S: 0.15 V
+2S: 2.77 V
+3S: 0.63 V
+4S: 0.06 V
