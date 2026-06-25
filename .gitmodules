@@ -1,0 +1,8 @@
+[submodule "stm8flash"]
+	path = stm8flash
+	url = https://github.com/vdudouyt/stm8flash.git
+	branch = master
+[submodule "stm8s-sdcc"]
+	path = stm8s-sdcc
+	url = https://github.com/stecman/stm8s-sdcc.git
+	branch = master
