@@ -65,5 +65,6 @@ For example cell #2 is charged to 3.096 volts, the LEDs will light up in this se
 |  -  |  +  |  -  |  -  | Cell #2 |
 |  -  |  -  |  +  |  -  |    3    |
 |  +  |  +  |  +  |  +  |    0    |
-|  -  |  +  |  +  |  +  | 2+3+4=9 |
-|  -  |  +  |  -  |  +  |  2+4=6  |
+|  -  |  +  |  +  |  +  | 9=2+3+4 |
+|  -  |  +  |  -  |  +  |  6=2+4  |
+

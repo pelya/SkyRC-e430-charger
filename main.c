@@ -1,10 +1,100 @@
+#include <stdbool.h>
 #include "stm8s.h"
 #include "stm8s_gpio.h"
 #include "gpio_config.h"
 
 #define DELAY_1SEC 250000
 
-void Delay(uint32_t nCount);
+uint8_t DisplayNumberData[4];
+uint8_t DisplayNumberPos = sizeof(DisplayNumberData) * 3;
+
+void Delay(uint32_t nCount) {
+	while (nCount != 0) {
+		nCount--;
+	}
+}
+
+// Show 4-digit decimal number
+void DisplayNumberSetup(uint16_t number) {
+	DisplayNumberPos = 0;
+	DisplayNumberData[3] = number % 10;
+	number /= 10;
+	DisplayNumberData[2] = number % 10;
+	number /= 10;
+	DisplayNumberData[1] = number % 10;
+	number /= 10;
+	DisplayNumberData[0] = number % 10;
+}
+
+// Show 4-digit decimal number, return false when done
+bool DisplayNumberShowLed(void) {
+	// Cells LEDs off
+	GPIO_WriteHigh(LED_1S);
+	GPIO_WriteHigh(LED_2S);
+	GPIO_WriteHigh(LED_3S);
+	GPIO_WriteHigh(LED_4S);
+	//GPIO_WriteHigh(Status_LED_Red);
+	//GPIO_WriteHigh(Status_LED_Green);
+
+	if (DisplayNumberPos >= sizeof(DisplayNumberData) * 3) {
+		return false;
+	}
+
+	if (DisplayNumberPos % 3 == 2) {
+		//GPIO_WriteLow(Status_LED_Green);
+		DisplayNumberPos++;
+		return true;
+	}
+
+	//GPIO_WriteLow(Status_LED_Red);
+
+	switch (DisplayNumberData[DisplayNumberPos / 3]) {
+		case 0:
+			// Zero = all LED on
+			GPIO_WriteLow(LED_1S);
+			GPIO_WriteLow(LED_2S);
+			GPIO_WriteLow(LED_3S);
+			GPIO_WriteLow(LED_4S);
+			break;
+		case 1:
+			GPIO_WriteLow(LED_1S);
+			break;
+		case 2:
+			GPIO_WriteLow(LED_2S);
+			break;
+		case 3:
+			GPIO_WriteLow(LED_3S);
+			break;
+		case 4:
+			GPIO_WriteLow(LED_4S);
+			break;
+		case 5:
+			GPIO_WriteLow(LED_1S);
+			GPIO_WriteLow(LED_4S);
+			break;
+		case 6:
+			GPIO_WriteLow(LED_2S);
+			GPIO_WriteLow(LED_4S);
+			break;
+		case 7:
+			GPIO_WriteLow(LED_3S);
+			GPIO_WriteLow(LED_4S);
+			break;
+		case 8:
+			GPIO_WriteLow(LED_1S);
+			GPIO_WriteLow(LED_3S);
+			GPIO_WriteLow(LED_4S);
+			break;
+		case 9:
+			GPIO_WriteLow(LED_2S);
+			GPIO_WriteLow(LED_3S);
+			GPIO_WriteLow(LED_4S);
+			break;
+	}
+
+	DisplayNumberPos++;
+	return true;
+}
 
 void main(void) {
 	/* Initialize I/Os in Output Mode */
@@ -21,7 +111,7 @@ void main(void) {
 		// Status LED off
 		GPIO_WriteHigh(Status_LED_Red);
 		GPIO_WriteHigh(Status_LED_Green);
-		Delay(DELAY_1SEC * 2);
+		Delay(DELAY_1SEC);
 		if (GPIO_ReadInputPin(Selector_LiFe)) {
 			// Status LED green
 			GPIO_WriteHigh(Status_LED_Red);
@@ -43,6 +133,8 @@ void main(void) {
 			GPIO_WriteLow(Status_LED_Green);
 			Delay(DELAY_1SEC / 2);
 		}
+		GPIO_WriteHigh(Status_LED_Red);
+		GPIO_WriteHigh(Status_LED_Green);
 
 		// Cells LEDs cycle
 		GPIO_WriteLow(LED_1S);
@@ -61,12 +153,13 @@ void main(void) {
 		GPIO_WriteHigh(LED_2S);
 		GPIO_WriteHigh(LED_3S);
 		GPIO_WriteHigh(LED_4S);
-	}
-}
+		Delay(DELAY_1SEC / 2);
 
-void Delay(uint32_t nCount) {
-	while (nCount != 0) {
-		nCount--;
+		// Decimal number output
+		DisplayNumberSetup(3096);
+		while (DisplayNumberShowLed()) {
+			Delay(DELAY_1SEC / 4);
+		}
 	}
 }
 
