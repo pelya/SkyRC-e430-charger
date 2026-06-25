@@ -2,5 +2,6 @@
 
 #include "stm8s_gpio.h"
 
-#define Status_LED_1         GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_4
+#define Status_LED_Green     GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_3
+#define Status_LED_Red       GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_4
 #define Selector_LiFe        GPIOE, (GPIO_Pin_TypeDef)GPIO_PIN_5

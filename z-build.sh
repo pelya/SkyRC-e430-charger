@@ -2,4 +2,4 @@
 
 make || exit 1
 
-[ -n "$1" ] && ./write-flash.sh
+./write-flash.sh
