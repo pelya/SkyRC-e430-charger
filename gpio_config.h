@@ -2,6 +2,11 @@
 
 #include "stm8s_gpio.h"
 
+#define LED_4S               GPIOA, (GPIO_Pin_TypeDef)GPIO_PIN_3
+#define Selector_2A          GPIOB, (GPIO_Pin_TypeDef)GPIO_PIN_2
+#define LED_1S               GPIOB, (GPIO_Pin_TypeDef)GPIO_PIN_5
+#define LED_2S               GPIOB, (GPIO_Pin_TypeDef)GPIO_PIN_6
+#define LED_3S               GPIOB, (GPIO_Pin_TypeDef)GPIO_PIN_7
 #define Status_LED_Green     GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_3
 #define Status_LED_Red       GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_4
 #define Selector_LiFe        GPIOE, (GPIO_Pin_TypeDef)GPIO_PIN_5
