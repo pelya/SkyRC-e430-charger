@@ -3,6 +3,8 @@ Open-source firmware for SkyRC e430 LiFe/LiPo 4S battery charger.
 
 This project supports only SkyRC e430. Other chargers are not supported.
 
+Only 4S battery configuration is supported. Do not plug 1S/2S/3S battery packs!
+
 The problem: SkyRC e430 ruins batteries, because it discharges cell #3 in 4S battery pack until it's unusable.
 
 The solution: find pin numbers on the circuit board and write your own firmware.
