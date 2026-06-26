@@ -239,7 +239,14 @@ void MainLoop(void) {
 		GPIO_WriteHigh(Status_LED_Green);
 		Delay(DELAY_1SEC / 2);
 	}
+
+	GPIO_WriteLow(Activate_Charger);
+	GPIO_WriteLow(Charger_PWM);
+
 	if (GPIO_ReadInputPin(Selector_2A)) {
+		// Enable charger circuitry
+		GPIO_WriteHigh(Activate_Charger);
+		//GPIO_WriteHigh(Charger_PWM);
 		// Status LED orange
 		GPIO_WriteLow(Status_LED_Red);
 		GPIO_WriteLow(Status_LED_Green);
