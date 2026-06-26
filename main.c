@@ -161,7 +161,6 @@ void main(void) {
 		GPIO_WriteHigh(LED_4S);
 		Delay(DELAY_1SEC / 2);
 
-		/*
 		// Decimal number output for ADC1 channel0
 		GPIO_WriteLow(LED_1S);
 		GPIO_WriteLow(LED_2S);
@@ -220,7 +219,6 @@ void main(void) {
 			Delay(DELAY_1SEC / 4);
 		}
 		Delay(DELAY_1SEC / 2);
-		*/
 
 		// Decimal number output for ADC1 channel3
 		GPIO_WriteLow(LED_3S);
