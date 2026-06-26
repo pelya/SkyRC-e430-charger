@@ -33,10 +33,10 @@ Battery connected - 4S LiPo
 ===========================
 
 Battery voltage:
-1S: 4.14 V
-2S: 4.13 V
-3S: 4.12 V
-4S: 4.14 V
+1S: 3.75 V
+2S: 3.74 V
+3S: 3.73 V
+4S: 3.74 V
 
 Voltage on each pin, pins connected to LEDs and switches not included:
 
