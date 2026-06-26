@@ -3,11 +3,11 @@ Open-source firmware for SkyRC e430 LiFe/LiPo 4S battery charger.
 
 This project supports only SkyRC e430. Other chargers are not supported.
 
-Only 4S battery configuration is supported. Do not plug 1S/2S/3S battery packs, or they will burn!
-
 The problem: SkyRC e430 ruins batteries, because it discharges cell #3 in 4S battery pack until it's unusable.
 
-The solution: find pin numbers on the circuit board and write your own firmware.
+The solution: Write your own firmware. Easy!
+
+Only 4S battery configuration is supported. Do not plug 1S/2S/3S battery packs, or they will burn!
 
 SkyRC e430 uses STM8S903K3 8-bit CPU, and no other digital components.
 
@@ -51,20 +51,24 @@ stm8flash/stm8flash -c stlinkv2 -p 'stm8s903?3' -w out/main.ihx
 
 ```
 
-The firmware charges each cell individually, switching between 4 cells each 20 seconds.
-The charging speed is slower than the original firmware.
-The currently charging cell ID is shown using one LED.
-The charger then shows voltage of this cell each 5 seconds using 4 LEDs.
+Pin numbers and functions are described in [gpio-test.txt](gpio-test.txt).
+
+The voltage of each charging cell is shown using four 'Cells Equalizer' LEDs.
+The charger shows cell number first.
+Then the charger shows voltage of this cell using 4 LEDs.
 Each decimal digit of the voltage is shown using the sum of 4 LED labels
-1S / 2S / 3S / 4S, with zero = all 4 LEDs on.
+1S / 2S / 3S / 4S, with zero = all 4 LEDs off.
+Between digits all 4 LEDs are on.
 
-For example cell #2 is charged to 3.096 volts, the LEDs will light up in this sequence:
+For example cell #2 is charged to 3.96 volts, the LEDs will light up in this sequence:
 
-|  1S |  2S |  3S |  4S | Meaning |
-|-----|-----|-----|-----|---------|
-|  -  |  +  |  -  |  -  | Cell #2 |
-|  -  |  -  |  +  |  -  |    3    |
-|  +  |  +  |  +  |  +  |    0    |
-|  -  |  +  |  +  |  +  | 9=2+3+4 |
-|  -  |  +  |  -  |  +  |  6=2+4  |
+|  1S |  2S |  3S |  4S |   Meaning  |
+|-----|-----|-----|-----|------------|
+|  -  |  +  |  -  |  -  |   Cell #2  |
+|  +  |  +  |  +  |  +  | Next digit |
+|  -  |  -  |  +  |  -  |      3     |
+|  +  |  +  |  +  |  +  | Next digit |
+|  -  |  +  |  +  |  +  |   9=2+3+4  |
+|  +  |  +  |  +  |  +  | Next digit |
+|  -  |  +  |  -  |  +  |    6=2+4   |
 

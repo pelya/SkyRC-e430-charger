@@ -44,7 +44,7 @@ VDD: 3.3
 
 PA1: 1.3 - 1.4 oscilloscope shows 0.0 - floating GPIO
 PA2: 1.1 - 1.3 oscilloscope shows 0.0 - floating GPIO
-PF4: 3.3
+PF4: 3.3 - activate charging circuits
 
 PB4: 2.0 - 2.6 oscilloscope shows 0.0 - floating GPIO
 PB3: 1.94 - ADC
@@ -63,5 +63,5 @@ PD3: 1.96 - ADC
 PD4: 0
 PD5: 1.98 - ADC
 PD6: 1.97 - ADC
-PD7: 3.3
+PD7: 3.3 - always on
 
