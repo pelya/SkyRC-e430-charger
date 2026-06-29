@@ -1,7 +1,6 @@
 #include <stdbool.h>
 
 #define DELAY_1SEC 250000
-//#define DELAY_1SEC 1000 * 1000
 #define ADC_TO_MILLIVOLTS(value) (value * 3300 / 1024)
 #define PWM_RESOLUTION 100
 

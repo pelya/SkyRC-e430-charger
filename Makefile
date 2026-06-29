@@ -15,7 +15,7 @@ TARGET = out/main.ihx
 
 all: $(TARGET) stm8flash/stm8flash
 
-out/%.rel: %.c gpio_config.h
+out/%.rel: %.c $(wildcard *.h)
 	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
