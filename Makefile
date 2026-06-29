@@ -3,9 +3,11 @@ CC = sdcc
 CFLAGS = -mstm8 -I stm8s-sdcc/inc -DSTM8S903=1
 LDFLAGS = -mstm8 -lstm8 --out-fmt-ihx
 
-SRCS = main.c
+SRCS = $(wildcard *.c)
 SRCS += stm8s-sdcc/src/stm8s_gpio.c
 SRCS += stm8s-sdcc/src/stm8s_adc1.c
+SRCS += stm8s-sdcc/src/stm8s_tim1.c
+SRCS += stm8s-sdcc/src/stm8s_clk.c
 
 OBJS = $(foreach F, $(SRCS), out/$(basename $(F)).rel)
 
