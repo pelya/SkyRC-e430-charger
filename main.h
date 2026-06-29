@@ -1,8 +1,9 @@
 #include <stdbool.h>
 
 #define DELAY_1SEC 250000
+//#define DELAY_1SEC 1000 * 1000
 #define ADC_TO_MILLIVOLTS(value) (value * 3300 / 1024)
-#define PWM_RESOLUTION 1000
+#define PWM_RESOLUTION 100
 
 // Six ADC channels are used out of seven, ADC_IN2 is used for 1A/2A selector
 extern uint16_t adc_values[7];

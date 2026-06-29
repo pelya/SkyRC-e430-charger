@@ -30,13 +30,10 @@ void main(void) {
 
 	ADC1_DeInit();
 
-	/*
-	ClockSetup();
 	PWMSetup();
 
 	// PWM 50%
 	TIM1_SetCompare1(PWM_RESOLUTION / 2);
-	*/
 
 	while (1) {
 		MainLoop();
@@ -67,12 +64,10 @@ void MainLoop(void) {
 	}
 
 	GPIO_WriteLow(Activate_Charger);
-	GPIO_WriteLow(Charger_PWM);
 
 	if (GPIO_ReadInputPin(Selector_2A)) {
 		// Enable charger circuitry
 		GPIO_WriteHigh(Activate_Charger);
-		//GPIO_WriteHigh(Charger_PWM);
 		// Status LED orange
 		GPIO_WriteLow(Status_LED_Red);
 		GPIO_WriteLow(Status_LED_Green);
