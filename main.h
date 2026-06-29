@@ -6,7 +6,7 @@
 #define PWM_RESOLUTION 100
 
 // Six ADC channels are used out of seven, ADC_IN2 is used for 1A/2A selector
-extern uint16_t adc_values[7];
+extern uint16_t ADCValues[7];
 
 void ClockSetup(void);
 void PWMSetup(void);

@@ -5,6 +5,7 @@
 
 #include "main.h"
 
+uint8_t DisplayCellIdx = 1;
 
 void MainLoop(void);
 
@@ -28,6 +29,15 @@ void main(void) {
 	GPIO_Init(Charger_PWM, GPIO_MODE_OUT_PP_LOW_FAST);
 	GPIO_WriteLow(Charger_PWM);
 
+	GPIO_Init(Discharge_0, GPIO_MODE_OUT_PP_LOW_SLOW);
+	GPIO_Init(Discharge_1, GPIO_MODE_OUT_PP_LOW_SLOW);
+	GPIO_Init(Discharge_2, GPIO_MODE_OUT_PP_LOW_SLOW);
+	GPIO_Init(Discharge_3, GPIO_MODE_OUT_PP_LOW_SLOW);
+	GPIO_WriteLow(Discharge_0);
+	GPIO_WriteLow(Discharge_1);
+	GPIO_WriteLow(Discharge_2);
+	GPIO_WriteLow(Discharge_3);
+
 	ADC1_DeInit();
 
 	PWMSetup();
@@ -41,29 +51,23 @@ void main(void) {
 }
 
 void MainLoop(void) {
-	uint16_t voltage;
-
 	// Status LED off
 	GPIO_WriteHigh(Status_LED_Red);
 	GPIO_WriteHigh(Status_LED_Green);
-	Delay(DELAY_1SEC);
+	//Delay(DELAY_1SEC);
 	if (GPIO_ReadInputPin(Selector_LiFe)) {
 		// Status LED green
 		GPIO_WriteHigh(Status_LED_Red);
 		GPIO_WriteLow(Status_LED_Green);
 		Delay(DELAY_1SEC / 4);
-		GPIO_WriteHigh(Status_LED_Green);
-		Delay(DELAY_1SEC / 4);
-		GPIO_WriteLow(Status_LED_Green);
-		Delay(DELAY_1SEC / 4);
+		TIM1_SetCompare1(PWM_RESOLUTION / 16);
 	} else {
 		// Status LED red
 		GPIO_WriteLow(Status_LED_Red);
 		GPIO_WriteHigh(Status_LED_Green);
-		Delay(DELAY_1SEC / 2);
+		Delay(DELAY_1SEC / 4);
+		TIM1_SetCompare1(PWM_RESOLUTION / 8);
 	}
-
-	GPIO_WriteLow(Activate_Charger);
 
 	if (GPIO_ReadInputPin(Selector_2A)) {
 		// Enable charger circuitry
@@ -71,7 +75,9 @@ void MainLoop(void) {
 		// Status LED orange
 		GPIO_WriteLow(Status_LED_Red);
 		GPIO_WriteLow(Status_LED_Green);
-		Delay(DELAY_1SEC / 2);
+		Delay(DELAY_1SEC / 4);
+	} else {
+		GPIO_WriteLow(Activate_Charger);
 	}
 	GPIO_WriteHigh(Status_LED_Red);
 	GPIO_WriteHigh(Status_LED_Green);
@@ -81,27 +87,47 @@ void MainLoop(void) {
 	GPIO_WriteHigh(LED_2S);
 	GPIO_WriteHigh(LED_3S);
 	GPIO_WriteHigh(LED_4S);
-	Delay(DELAY_1SEC / 2);
+	//Delay(DELAY_1SEC / 2);
 
 	ReadADCValues();
 
-	voltage = ADC_TO_MILLIVOLTS(adc_values[3]) / 10;
-	DisplayNumber(1000 + voltage);
+	GPIO_WriteLow(Discharge_0);
+	GPIO_WriteLow(Discharge_1);
+	GPIO_WriteLow(Discharge_2);
+	GPIO_WriteLow(Discharge_3);
 
-	voltage = ADC_TO_MILLIVOLTS(adc_values[4]) / 10;
-	DisplayNumber(2000 + voltage);
+	DisplayCellIdx++;
+	if (DisplayCellIdx > 6) {
+		DisplayCellIdx = 1;
+	}
 
-	voltage = ADC_TO_MILLIVOLTS(adc_values[5]) / 10;
-	DisplayNumber(3000 + voltage);
+	uint8_t ADCChannel = 0;
 
-	voltage = ADC_TO_MILLIVOLTS(adc_values[6]) / 10;
-	DisplayNumber(4000 + voltage);
+	switch (DisplayCellIdx) {
+		case 1:
+			ADCChannel = 3;
+			GPIO_WriteHigh(Discharge_0);
+			break;
+		case 2:
+			ADCChannel = 4;
+			GPIO_WriteHigh(Discharge_1);
+			break;
+		case 3:
+			ADCChannel = 5;
+			GPIO_WriteHigh(Discharge_2);
+			break;
+		case 4:
+			ADCChannel = 6;
+			GPIO_WriteHigh(Discharge_3);
+			break;
+		case 5:
+			ADCChannel = 0;
+			break;
+		case 6:
+			ADCChannel = 1;
+			break;
+	}
 
-	voltage = ADC_TO_MILLIVOLTS(adc_values[0]) / 10;
-	DisplayNumber(5000 + voltage);
-
-	voltage = ADC_TO_MILLIVOLTS(adc_values[1]) / 10;
-	DisplayNumber(6000 + voltage);
-
-	Delay(DELAY_1SEC / 4);
+	uint16_t Voltage = ADC_TO_MILLIVOLTS(ADCValues[ADCChannel]) / 10;
+	DisplayNumber(DisplayCellIdx * 1000 + Voltage);
 }
