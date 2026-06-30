@@ -9,9 +9,10 @@ void assert_failed(uint8_t* file, uint32_t line) {
 }
 #endif
 
-void Delay(uint32_t nCount) {
+void DelayMicrosec(uint64_t nCount) {
+	nCount = nCount * 54 / 100;
 	while (nCount != 0) {
-		__asm__("nop");
 		nCount--;
+		//__asm__("nop");
 	}
 }

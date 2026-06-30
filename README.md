@@ -9,10 +9,14 @@ The solution: Write your own firmware. Easy!
 
 Only 4S battery configuration is supported. Do not plug 1S/2S/3S battery packs, or they will burn!
 
-Charging is always active - the charging socket always has power.
+SkyRC e430 has only one charging port - the red/black banana socket.
+Ports 2S/3S/4S have no power, they are only used to discharge individual cells to balance them.
+Once any cells are charged above 3.0 volts LiFe / 3.5 volts LiPo, the charger will balance the battery
+by discharging high-voltage cells until they are lower than the lowest cell voltage plus 0.1 volts.
+If any cell reaches 3.65 volts LiFe / 4.2 volts LiPo, the charger will stop charging and will only
+discharge cells to balance them.
+The charging and balancing/discharging individual cells occurs at the same time.
 There are no error modes - the charger will try to recover batteries discharged even to zero volts.
-Once any cells are charged above 3.0 volts LoFe / 3.5 volts LiPo, the charger will balance cells by
-discharging high-voltage cells until they are not higher than the lowest cell voltage plus 0.5 volts.
 
 The circuit board already has contacts for flashing firmware, so you only need to unscrew 4 screws
 to open the casing, and connect 4 wires 5V, SWIM, GND, and NRST from your ST-LINK/V2 programmer
