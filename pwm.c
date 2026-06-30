@@ -1,7 +1,6 @@
 #include "stm8s.h"
 #include "stm8s_gpio.h"
 #include "stm8s_clk.h"
-#include "gpio_config.h"
 
 #include "main.h"
 
@@ -49,3 +48,30 @@ void PWMSetup(void) {
 	TIM1_Cmd(ENABLE);
 }
 
+void SetChargerOutputVolts(uint8_t volts) {
+	if (volts <= 6) {
+		// Minimum = 6 volts
+		TIM1_SetCompare1(0);
+	} else if (volts <= 7) {
+		TIM1_SetCompare1(6);
+	} else if (volts <= 8) {
+		TIM1_SetCompare1(7);
+	} else if (volts <= 9) {
+		TIM1_SetCompare1(8);
+	} else if (volts <= 10) {
+		TIM1_SetCompare1(9);
+	} else if (volts <= 12) {
+		TIM1_SetCompare1(10);
+	} else if (volts <= 13) {
+		TIM1_SetCompare1(11);
+	} else if (volts <= 14) {
+		TIM1_SetCompare1(12);
+	} else if (volts <= 15) {
+		TIM1_SetCompare1(13);
+	} else if (volts <= 17) {
+		TIM1_SetCompare1(14);
+	} else {
+		// Maximum = 18 volts
+		TIM1_SetCompare1(PWM_RESOLUTION);
+	}
+}

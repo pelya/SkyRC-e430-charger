@@ -1,7 +1,6 @@
 #include "stm8s.h"
 #include "stm8s_gpio.h"
 #include "stm8s_adc1.h"
-#include "gpio_config.h"
 
 #include "main.h"
 

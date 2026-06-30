@@ -14,6 +14,7 @@
 #define Discharge_3          GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_5
 #define Discharge_2          GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_6
 #define Discharge_1          GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_7
+#define Debug_UART           GPIOD, (GPIO_Pin_TypeDef)GPIO_PIN_4
 #define Always_On            GPIOD, (GPIO_Pin_TypeDef)GPIO_PIN_7
 #define Selector_LiFe        GPIOE, (GPIO_Pin_TypeDef)GPIO_PIN_5
 #define Activate_Charger     GPIOF, (GPIO_Pin_TypeDef)GPIO_PIN_4
