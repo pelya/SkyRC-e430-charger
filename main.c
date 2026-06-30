@@ -36,45 +36,76 @@ void main(void) {
 	ClockSetup();
 	PWMSetup();
 
-	// PWM 25%
-	TIM1_SetCompare1(PWM_RESOLUTION / 4);
+	// PWM 0%
+	TIM1_SetCompare1(0);
+	// Enable charger circuitry
+	GPIO_WriteHigh(Activate_Charger);
 
 	while (1) {
 		MainLoop();
 	}
 }
 
-void MainLoop(void) {
-	//DelayMicrosec(DELAY_1SEC / 8);
+void SetChargerOutputVolts(uint8_t volts) {
+	if (volts <= 6) {
+		// Minimum = 6 volts
+		TIM1_SetCompare1(0);
+	} else if (volts <= 7) {
+		TIM1_SetCompare1(6);
+	} else if (volts <= 8) {
+		TIM1_SetCompare1(7);
+	} else if (volts <= 9) {
+		TIM1_SetCompare1(8);
+	} else if (volts <= 10) {
+		TIM1_SetCompare1(9);
+	} else if (volts <= 12) {
+		TIM1_SetCompare1(10);
+	} else if (volts <= 13) {
+		TIM1_SetCompare1(11);
+	} else if (volts <= 14) {
+		TIM1_SetCompare1(12);
+	} else if (volts <= 15) {
+		TIM1_SetCompare1(13);
+	} else if (volts <= 17) {
+		TIM1_SetCompare1(14);
+	} else {
+		// Maximum = 18 volts
+		TIM1_SetCompare1(PWM_RESOLUTION);
+	}
+}
 
+void MainLoop(void) {
 	// Status LED off
 	GPIO_WriteHigh(Status_LED_Red);
 	GPIO_WriteHigh(Status_LED_Green);
 
-	if (GPIO_ReadInputPin(Selector_LiFe)) {
-		// Status LED green
-		GPIO_WriteHigh(Status_LED_Red);
-		GPIO_WriteLow(Status_LED_Green);
-	} else {
-		// Status LED red
-		GPIO_WriteLow(Status_LED_Red);
-		GPIO_WriteHigh(Status_LED_Green);
-	}
-
-	DelayMicrosec(DELAY_1SEC / 4);
-
 	if (GPIO_ReadInputPin(Selector_2A)) {
-		// Enable charger circuitry
-		GPIO_WriteHigh(Activate_Charger);
-		// Status LED orange
-		GPIO_WriteLow(Status_LED_Red);
-		GPIO_WriteLow(Status_LED_Green);
+		if (GPIO_ReadInputPin(Selector_LiFe)) {
+			// Status LED orange
+			GPIO_WriteLow(Status_LED_Red);
+			GPIO_WriteLow(Status_LED_Green);
+			SetChargerOutputVolts(18);
+		} else {
+			// Status LED green
+			GPIO_WriteHigh(Status_LED_Red);
+			GPIO_WriteLow(Status_LED_Green);
+			SetChargerOutputVolts(12);
+		}
 	} else {
-		GPIO_WriteLow(Activate_Charger);
-		// Status LED off
-		GPIO_WriteHigh(Status_LED_Red);
-		GPIO_WriteHigh(Status_LED_Green);
+		if (GPIO_ReadInputPin(Selector_LiFe)) {
+			// Status LED red
+			GPIO_WriteLow(Status_LED_Red);
+			GPIO_WriteHigh(Status_LED_Green);
+			SetChargerOutputVolts(9);
+		} else {
+			// Status LED off
+			GPIO_WriteHigh(Status_LED_Red);
+			GPIO_WriteHigh(Status_LED_Green);
+			SetChargerOutputVolts(6);
+		}
 	}
+
+	DelayMicrosec(DELAY_1SEC / 2);
 
 	// Cells LEDs off
 	GPIO_WriteHigh(LED_1S);
@@ -151,5 +182,4 @@ void MainLoop(void) {
 
 	uint16_t Voltage = ADC_TO_MILLIVOLTS(ADCValues[ADCChannel]) / 10;
 	DisplayNumber(ADCValues[1]);
-
 }

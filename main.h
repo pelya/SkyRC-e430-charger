@@ -2,7 +2,7 @@
 
 #define DELAY_1SEC 1000000
 #define ADC_TO_MILLIVOLTS(value) (value * 3300 / 1024)
-#define PWM_RESOLUTION 100
+#define PWM_RESOLUTION 200
 
 // Six ADC channels are used out of seven, ADC_IN2 is used for 1A/2A selector
 extern uint16_t ADCValues[7];
