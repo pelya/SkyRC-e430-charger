@@ -89,8 +89,8 @@ void DisplayNumber(uint16_t number) {
 	DisplayNumberData[0] = number % 10;
 
 	while (DisplayNumberShowLed()) {
-		Delay(DELAY_1SEC / 6);
+		DelayMicrosec(DELAY_1SEC / 6);
 	}
-	Delay(DELAY_1SEC / 2);
+	DelayMicrosec(DELAY_1SEC / 2);
 }
 

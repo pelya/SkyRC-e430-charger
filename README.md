@@ -7,10 +7,10 @@ This firmware will turn your SkyRC e430 into a power supply.
 
 Power on the main charging port is always on (red/black banana plug), no need to plug the battery.
 You can select power supply voltage using switches on the front panel:
-6 volts: LiPo 1A, LED 1S will activate.
-9 volts: LiFe 1A, LED 2S will activate.
-15 volts: LiPo 2A, LED 3S will activate.
-18 volts: LiFe 2A, LED 4S will activate.
+6 volts: LiPo 1A, LED 1S will activate, status LED off.
+9 volts: LiFe 1A, LED 2S will activate, red status LED.
+12 volts: LiPo 2A, LED 3S will activate, green status LED.
+18 volts: LiFe 2A, LED 4S will activate, orange status LED.
 
 Ports 2S/3S/4S have no power, they are only used to discharge individual cells to balance them.
 
