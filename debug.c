@@ -31,6 +31,7 @@ void DebugPrintChar(char data) {
 	// 3. Stop Bit (HIGH)
 	GPIO_WriteHigh(Debug_UART);
 	DelayBitTime();
+	DelayBitTime();
 }
 
 void DebugPrintStr(const char *str) {
@@ -38,4 +39,20 @@ void DebugPrintStr(const char *str) {
 		DebugPrintChar(str[0]);
 		str++;
 	}
+}
+
+void DebugPrintNumber(uint16_t number) {
+	if (number >= 10000) {
+		DebugPrintChar('0' + (number / 10000) % 10);
+	}
+	if (number >= 1000) {
+		DebugPrintChar('0' + (number / 1000) % 10);
+	}
+	if (number >= 100) {
+		DebugPrintChar('0' + (number / 100) % 10);
+	}
+	if (number >= 10) {
+		DebugPrintChar('0' + (number / 10) % 10);
+	}
+	DebugPrintChar('0' + number % 10);
 }

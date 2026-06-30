@@ -1,7 +1,7 @@
 
 CC = sdcc
-CFLAGS = -mstm8 -I stm8s-sdcc/inc -DSTM8S903=1
-LDFLAGS = -mstm8 -lstm8 --out-fmt-ihx
+CFLAGS = -mstm8 -I stm8s-sdcc/inc -DSTM8S903=1 --opt-code-size
+LDFLAGS = -mstm8 -lstm8 --out-fmt-ihx --opt-code-size
 
 SRCS = $(wildcard *.c)
 SRCS += stm8s-sdcc/src/stm8s_gpio.c

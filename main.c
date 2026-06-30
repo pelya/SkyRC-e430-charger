@@ -4,8 +4,6 @@
 
 #include "main.h"
 
-uint8_t DisplayCellIdx = 1;
-
 void MainLoop(void);
 
 void main(void) {
@@ -40,7 +38,7 @@ void main(void) {
 	// PWM 0%
 	TIM1_SetCompare1(0);
 	// Enable charger circuitry
-	GPIO_WriteHigh(Activate_Charger);
+	//GPIO_WriteHigh(Activate_Charger);
 
 	DebugPrintStr("\r\nSTART\r\n");
 
@@ -54,6 +52,11 @@ void MainLoop(void) {
 	// Status LED off
 	GPIO_WriteHigh(Status_LED_Red);
 	GPIO_WriteHigh(Status_LED_Green);
+	// Cells LEDs off
+	GPIO_WriteHigh(LED_1S);
+	GPIO_WriteHigh(LED_2S);
+	GPIO_WriteHigh(LED_3S);
+	GPIO_WriteHigh(LED_4S);
 
 	if (GPIO_ReadInputPin(Selector_2A)) {
 		if (GPIO_ReadInputPin(Selector_LiFe)) {
@@ -83,79 +86,13 @@ void MainLoop(void) {
 
 	DelayMicrosec(DELAY_1SEC / 2);
 
-	// Cells LEDs off
-	GPIO_WriteHigh(LED_1S);
-	GPIO_WriteHigh(LED_2S);
-	GPIO_WriteHigh(LED_3S);
-	GPIO_WriteHigh(LED_4S);
-	//DelayMicrosec(DELAY_1SEC / 2);
-
 	ReadADCValues();
 
-	GPIO_WriteLow(Discharge_0);
-	GPIO_WriteLow(Discharge_1);
-	GPIO_WriteLow(Discharge_2);
-	GPIO_WriteLow(Discharge_3);
-
-	DisplayCellIdx++;
-	if (DisplayCellIdx > 6) {
-		DisplayCellIdx = 1;
+	for (uint8_t i = 0; i < sizeof(ADCValues) / sizeof(ADCValues[0]); i++) {
+		DebugPrintStr("ADC");
+		DebugPrintNumber(i);
+		DebugPrintStr(" = ");
+		DebugPrintNumber(ADCValues[i]);
+		DebugPrintStr("\r\n");
 	}
-
-	uint8_t ADCChannel = 0;
-
-	switch (DisplayCellIdx) {
-		case 1:
-			ADCChannel = 3;
-			//GPIO_WriteHigh(Discharge_0);
-			break;
-		case 2:
-			ADCChannel = 4;
-			//GPIO_WriteHigh(Discharge_1);
-			break;
-		case 3:
-			ADCChannel = 5;
-			//GPIO_WriteHigh(Discharge_2);
-			break;
-		case 4:
-			ADCChannel = 6;
-			//GPIO_WriteHigh(Discharge_3);
-			break;
-		case 5:
-			ADCChannel = 0;
-			break;
-		case 6:
-			ADCChannel = 1;
-			break;
-	}
-
-	//uint16_t Voltage = ADC_TO_MILLIVOLTS(ADCValues[ADCChannel]) / 10;
-	//DisplayNumber(DisplayCellIdx * 1000 + Voltage);
-	/*
-	uint8_t MaxChannel = 0;
-	uint16_t MaxVoltage = 0;
-	for (uint8_t i = 3; i < 7; i++) {
-		if (ADCValues[i] > MaxVoltage) {
-			MaxVoltage = ADCValues[i];
-			MaxChannel = i;
-		}
-	}
-	switch (MaxChannel) {
-		case 3:
-			GPIO_WriteLow(LED_1S);
-			break;
-		case 4:
-			GPIO_WriteLow(LED_2S);
-			break;
-		case 5:
-			GPIO_WriteLow(LED_3S);
-			break;
-		case 6:
-			GPIO_WriteLow(LED_4S);
-			break;
-	}
-	*/
-
-	uint16_t Voltage = ADC_TO_MILLIVOLTS(ADCValues[ADCChannel]) / 10;
-	DisplayNumber(ADCValues[1]);
 }
