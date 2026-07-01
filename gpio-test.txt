@@ -48,8 +48,8 @@ PF4: 3.3 - activate charging circuits
 
 PB4: 2.0 - 2.6 oscilloscope shows 0.0 - floating GPIO
 PB3: 1.94 - ADC
-PB1: 2.51 - ADC
-PB0: 0.75 - ADC
+PB1: 2.51 - ADC - voltage of the red/black banana socket = total battery voltage, 845 = 16.8 volts, 733 = 14.6 volts.
+PB0: 0.75 - ADC - current of the red/black banana socket = total charging current, 30 = 0.118 A, 65 = 0.33 A.
 
 PC1: 0.97 oscilloscope shows PWM with period 50 microseconds
 PC2: 0

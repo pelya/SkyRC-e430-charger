@@ -10,9 +10,12 @@ void assert_failed(uint8_t* file, uint32_t line) {
 #endif
 
 void DelayMicrosec(uint64_t nCount) {
+	// Coefficient calculated on the live STM8 using a clock and a blinking LED.
+	// The system clock must be set to 16 MHz
 	nCount = nCount * 54 / 100;
 	while (nCount != 0) {
 		nCount--;
+		// We don't need nop instruction here, decreasing 64-bit number is already slow
 		//__asm__("nop");
 	}
 }
