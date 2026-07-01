@@ -75,7 +75,7 @@ void MainLoop(void) {
 			GPIO_WriteHigh(Activate_Charger);
 			// Discharge 4S
 			GPIO_WriteLow(LED_4S);
-			GPIO_WriteHigh(Discharge_3S);
+			GPIO_WriteHigh(Discharge_4S);
 		}
 	} else if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_1A_2A) {
 		if (GPIO_ReadInputPin(Selector_LiFe)) {
