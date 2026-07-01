@@ -34,46 +34,46 @@ void ReadADCValues(void) {
 	ADC1_ClearFlag(ADC1_FLAG_EOC);
 
 	ADC1_Init(ADC1_CONVERSIONMODE_SINGLE,
-				ADC1_CHANNEL_3,
+				ADC_1S,
 				ADC1_PRESSEL_FCPU_D18,
 				ADC1_EXTTRIG_TIM, DISABLE,
 				ADC1_ALIGN_RIGHT,
 				ADC1_SCHMITTTRIG_ALL, DISABLE);
 	ADC1_StartConversion();
 	while (!ADC1_GetFlagStatus(ADC1_FLAG_EOC)) {}
-	ADCValues[ADC1_CHANNEL_3] = ADC1_GetConversionValue();
+	ADCValues[ADC_1S] = ADC1_GetConversionValue();
 	ADC1_ClearFlag(ADC1_FLAG_EOC);
 
 	ADC1_Init(ADC1_CONVERSIONMODE_SINGLE,
-				ADC1_CHANNEL_4,
+				ADC_2S,
 				ADC1_PRESSEL_FCPU_D18,
 				ADC1_EXTTRIG_TIM, DISABLE,
 				ADC1_ALIGN_RIGHT,
 				ADC1_SCHMITTTRIG_ALL, DISABLE);
 	ADC1_StartConversion();
 	while (!ADC1_GetFlagStatus(ADC1_FLAG_EOC)) {}
-	ADCValues[ADC1_CHANNEL_4] = ADC1_GetConversionValue();
+	ADCValues[ADC_2S] = ADC1_GetConversionValue();
 	ADC1_ClearFlag(ADC1_FLAG_EOC);
 
 	ADC1_Init(ADC1_CONVERSIONMODE_SINGLE,
-				ADC1_CHANNEL_5,
+				ADC_3S,
 				ADC1_PRESSEL_FCPU_D18,
 				ADC1_EXTTRIG_TIM, DISABLE,
 				ADC1_ALIGN_RIGHT,
 				ADC1_SCHMITTTRIG_ALL, DISABLE);
 	ADC1_StartConversion();
 	while (!ADC1_GetFlagStatus(ADC1_FLAG_EOC)) {}
-	ADCValues[ADC1_CHANNEL_5] = ADC1_GetConversionValue();
+	ADCValues[ADC_3S] = ADC1_GetConversionValue();
 	ADC1_ClearFlag(ADC1_FLAG_EOC);
 
 	ADC1_Init(ADC1_CONVERSIONMODE_SINGLE,
-				ADC1_CHANNEL_6,
+				ADC_4S,
 				ADC1_PRESSEL_FCPU_D18,
 				ADC1_EXTTRIG_TIM, DISABLE,
 				ADC1_ALIGN_RIGHT,
 				ADC1_SCHMITTTRIG_ALL, DISABLE);
 	ADC1_StartConversion();
 	while (!ADC1_GetFlagStatus(ADC1_FLAG_EOC)) {}
-	ADCValues[ADC1_CHANNEL_6] = ADC1_GetConversionValue();
+	ADCValues[ADC_4S] = ADC1_GetConversionValue();
 	ADC1_ClearFlag(ADC1_FLAG_EOC);
 }

@@ -28,7 +28,7 @@ void DebugPrintChar(char data) {
 		DelayBitTime();
 	}
 
-	// 3. Stop Bit (HIGH)
+	// 3. Stop Bit (HIGH) - add two stop bits to make bit-banged output more stable
 	GPIO_WriteHigh(Debug_UART);
 	DelayBitTime();
 	DelayBitTime();

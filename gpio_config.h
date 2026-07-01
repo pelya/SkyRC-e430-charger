@@ -6,17 +6,21 @@
 #define ADC_TotalCurrent     ADC1_CHANNEL_0
 #define ADC_TotalVoltage     ADC1_CHANNEL_1
 #define Selector_2A          GPIOB, (GPIO_Pin_TypeDef)GPIO_PIN_2
+#define ADC_4S               ADC1_CHANNEL_3
 #define LED_1S               GPIOB, (GPIO_Pin_TypeDef)GPIO_PIN_5
 #define LED_2S               GPIOB, (GPIO_Pin_TypeDef)GPIO_PIN_6
 #define LED_3S               GPIOB, (GPIO_Pin_TypeDef)GPIO_PIN_7
 #define Charger_PWM          GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_1
-#define Discharge_0          GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_2
+#define Discharge_1S         GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_2
 #define Status_LED_Green     GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_3
 #define Status_LED_Red       GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_4
-#define Discharge_3          GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_5
-#define Discharge_2          GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_6
-#define Discharge_1          GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_7
+#define Discharge_4S         GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_5
+#define Discharge_3S         GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_6
+#define Discharge_2S         GPIOC, (GPIO_Pin_TypeDef)GPIO_PIN_7
+#define ADC_3S               ADC1_CHANNEL_4
 #define Debug_UART           GPIOD, (GPIO_Pin_TypeDef)GPIO_PIN_4
+#define ADC_2S               ADC1_CHANNEL_5
+#define ADC_1S               ADC1_CHANNEL_6
 #define Always_On            GPIOD, (GPIO_Pin_TypeDef)GPIO_PIN_7
 #define Selector_LiFe        GPIOE, (GPIO_Pin_TypeDef)GPIO_PIN_5
 #define Activate_Charger     GPIOF, (GPIO_Pin_TypeDef)GPIO_PIN_4

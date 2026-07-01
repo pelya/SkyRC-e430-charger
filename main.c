@@ -23,10 +23,10 @@ void main(void) {
 
 	GPIO_Init(Charger_PWM, GPIO_MODE_OUT_PP_LOW_FAST);
 
-	GPIO_Init(Discharge_0, GPIO_MODE_OUT_PP_LOW_SLOW);
-	GPIO_Init(Discharge_1, GPIO_MODE_OUT_PP_LOW_SLOW);
-	GPIO_Init(Discharge_2, GPIO_MODE_OUT_PP_LOW_SLOW);
-	GPIO_Init(Discharge_3, GPIO_MODE_OUT_PP_LOW_SLOW);
+	GPIO_Init(Discharge_1S, GPIO_MODE_OUT_PP_LOW_SLOW);
+	GPIO_Init(Discharge_2S, GPIO_MODE_OUT_PP_LOW_SLOW);
+	GPIO_Init(Discharge_3S, GPIO_MODE_OUT_PP_LOW_SLOW);
+	GPIO_Init(Discharge_4S, GPIO_MODE_OUT_PP_LOW_SLOW);
 
 	GPIO_Init(Debug_UART, GPIO_MODE_OUT_PP_HIGH_FAST);
 
@@ -41,6 +41,7 @@ void main(void) {
 	GPIO_WriteHigh(Activate_Charger);
 
 	while (1) {
+		//DebugPrintStr("\r\n---\r\n");
 		MainLoop();
 	}
 }
@@ -55,10 +56,10 @@ void MainLoop(void) {
 	GPIO_WriteHigh(LED_3S);
 	GPIO_WriteHigh(LED_4S);
 
-	GPIO_WriteLow(Discharge_0);
-	GPIO_WriteLow(Discharge_1);
-	GPIO_WriteLow(Discharge_2);
-	GPIO_WriteLow(Discharge_3);
+	GPIO_WriteLow(Discharge_1S);
+	GPIO_WriteLow(Discharge_2S);
+	GPIO_WriteLow(Discharge_3S);
+	GPIO_WriteLow(Discharge_4S);
 
 	if (GPIO_ReadInputPin(Selector_2A)) {
 		if (GPIO_ReadInputPin(Selector_LiFe)) {
@@ -87,10 +88,10 @@ void MainLoop(void) {
 			GPIO_WriteHigh(Status_LED_Green);
 			SetChargerOutputVolts(6);
 			GPIO_WriteLow(Activate_Charger);
-			GPIO_WriteHigh(Discharge_0);
-			GPIO_WriteHigh(Discharge_1);
-			GPIO_WriteHigh(Discharge_2);
-			GPIO_WriteHigh(Discharge_3);
+			GPIO_WriteHigh(Discharge_1S);
+			GPIO_WriteHigh(Discharge_2S);
+			GPIO_WriteHigh(Discharge_3S);
+			GPIO_WriteHigh(Discharge_4S);
 		}
 	}
 
@@ -98,11 +99,22 @@ void MainLoop(void) {
 
 	ReadADCValues();
 
-	for (uint8_t i = 0; i < sizeof(ADCValues) / sizeof(ADCValues[0]); i++) {
-		DebugPrintStr("ADC");
-		DebugPrintNumber(i);
-		DebugPrintStr(" = ");
-		DebugPrintNumber(ADCValues[i]);
-		DebugPrintStr("\r\n");
-	}
+	DebugPrintStr("Current = ");
+	DebugPrintNumber(ADCValues[ADC_TotalCurrent]);
+	DebugPrintStr("\r\n");
+	DebugPrintStr("Voltage = ");
+	DebugPrintNumber(ADCValues[ADC_TotalVoltage]);
+	DebugPrintStr("\r\n");
+	DebugPrintStr("1S = ");
+	DebugPrintNumber(ADCValues[ADC_1S]);
+	DebugPrintStr("\r\n");
+	DebugPrintStr("2S = ");
+	DebugPrintNumber(ADCValues[ADC_2S]);
+	DebugPrintStr("\r\n");
+	DebugPrintStr("3S = ");
+	DebugPrintNumber(ADCValues[ADC_3S]);
+	DebugPrintStr("\r\n");
+	DebugPrintStr("4S = ");
+	DebugPrintNumber(ADCValues[ADC_4S]);
+	DebugPrintStr("\r\n");
 }
