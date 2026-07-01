@@ -19,14 +19,14 @@ The charging and balancing/discharging individual cells occurs at the same time.
 There are no error modes - the charger will try to recover batteries discharged even to zero volts.
 
 The circuit board already has contacts for flashing firmware, so you only need to unscrew 4 screws
-to open the casing, and connect 4 wires 5V, SWIM, GND, and NRST from your ST-LINK/V2 programmer
-to the 4 pinholes on the circuit board, and hold them with your finger while the firmware is flashing -
-no need to solder it.
+to open the casing, and connect 4 wires 5.0V, SWIM, GND, and RST from your ST-LINK/V2 programmer
+to the 4 pinholes on the circuit board 5V, SWM, AGND, and NRST, and hold them with your finger
+while the firmware is flashing - no need to solder it.
 
 ![Firmware flashing contacts](stlink-port.jpg)
 
-Hardware required: PZ1 screwdriver and ST-LINK/V2 programmer. It can program both STM32 and STM8 chips, I bet you did not know!
-STM32 uses pins SWCLK and SWDIO, while STM8 uses pins SWIM and NRST.
+Hardware required: PZ1 screwdriver and ST-LINK/V2 programmer. It can program both STM32 and STM8 chips,
+I bet you did not know this! STM32 uses pins SWCLK and SWDIO, while STM8 uses pins SWIM and NRST.
 
 Software required: SDCC compiler, optionally STM8CubeMX for editing .ioc8 project file, standard utilities like make and gcc.
 
@@ -47,7 +47,7 @@ Build instructions for Windows:
 ₊˚ ✧ ‿︵‿୨ 𝔾 𝕆 𝕆 𝔻  𝕃 𝕌 ℂ 𝕂 ୧‿︵‿ ✧ ₊˚
 ```
 
-Unlock STM8 flash before wirting firmware:
+Unlock STM8 flash before writing firmware:
 ```
 stm8flash/stm8flash -c stlinkv2 -p 'stm8s903?3' -u
 ```
@@ -62,18 +62,27 @@ SkyRC e430 uses STM8S903K3 8-bit CPU, and no other digital components.
 
 Pin numbers and functions are described in [gpio-test.txt](gpio-test.txt).
 
-The voltage of each charging cell is shown using four 'Cells Equalizer' LEDs.
-The charger shows cell number first.
-Then the charger shows voltage of this cell using 4 LEDs.
+To view debug logs, you will need an UART adapter.
+Solder the connector wire to the contact point closest to the SWM pinhole:
+
+![Debug wire](debug-wire.jpg)
+
+Connect UART adapter RX pin to the debug wire, and GND pin to the AGND pinhole,
+then set your UART adapter baudrate to 9600 baud and encoding to 8N1.
+
+UART logs are written using bit-banging GPIO PD4, so if logs are garbled,
+change delay time inside function `DelayBitTime` in [debug.c](debug.c).
+
+The voltage of the battery is shown using four 'Cells Equalizer' LEDs.
 Each decimal digit of the voltage is shown using the sum of 4 LED labels
 1S / 2S / 3S / 4S, with zero = all 4 LEDs off.
-Between digits all 4 LEDs are on.
+All 4 LEDs are briefly on when the next digit is shown.
 
-For example cell #2 is charged to 3.96 volts, the LEDs will light up in this sequence:
+For example cell #2 is charged to 13.96 volts, the LEDs will light up in this sequence:
 
 |  1S |  2S |  3S |  4S |   Meaning  |
 |-----|-----|-----|-----|------------|
-|  -  |  +  |  -  |  -  |   Cell #2  |
+|  +  |  -  |  -  |  -  |      1     |
 |  +  |  +  |  +  |  +  | Next digit |
 |  -  |  -  |  +  |  -  |      3     |
 |  +  |  +  |  +  |  +  | Next digit |
