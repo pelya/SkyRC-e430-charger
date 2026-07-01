@@ -6,8 +6,9 @@
 #define ADC_TO_MILLIVOLTS(value) (value * 3300 / 1024)
 #define PWM_RESOLUTION 200
 
-#define ADC_CH1_VOLTAGE_16_8 845 // 4S LiPo maximum voltage = 16.8 V
-#define ADC_CH1_VOLTAGE_14_6 -1 // 4S LiFe maximum voltage = 14.6 V
+#define ADC_TOTAL_VOLTAGE_16_8V 845 // 4S LiPo maximum voltage = 16.8 V
+#define ADC_TOTAL_VOLTAGE_14_6V 734 // 4S LiFe maximum voltage = 14.6 V
+#define ADC_TOTAL_CURRENT_1A    195 // 0.118 A = ADC value 30, 0.33 A = ADC value 65
 
 // Six ADC channels are used out of seven, ADC_IN2 is used for 1A/2A selector
 extern uint16_t ADCValues[7];

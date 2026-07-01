@@ -38,12 +38,9 @@ void main(void) {
 	// PWM 0%
 	TIM1_SetCompare1(0);
 	// Enable charger circuitry
-	//GPIO_WriteHigh(Activate_Charger);
-
-	DebugPrintStr("\r\nSTART\r\n");
+	GPIO_WriteHigh(Activate_Charger);
 
 	while (1) {
-		DebugPrintStr("TICK\r\n");
 		MainLoop();
 	}
 }
@@ -58,17 +55,24 @@ void MainLoop(void) {
 	GPIO_WriteHigh(LED_3S);
 	GPIO_WriteHigh(LED_4S);
 
+	GPIO_WriteLow(Discharge_0);
+	GPIO_WriteLow(Discharge_1);
+	GPIO_WriteLow(Discharge_2);
+	GPIO_WriteLow(Discharge_3);
+
 	if (GPIO_ReadInputPin(Selector_2A)) {
 		if (GPIO_ReadInputPin(Selector_LiFe)) {
 			// Status LED orange
 			GPIO_WriteLow(Status_LED_Red);
 			GPIO_WriteLow(Status_LED_Green);
 			SetChargerOutputVolts(18);
+			GPIO_WriteHigh(Activate_Charger);
 		} else {
 			// Status LED green
 			GPIO_WriteHigh(Status_LED_Red);
 			GPIO_WriteLow(Status_LED_Green);
 			SetChargerOutputVolts(12);
+			GPIO_WriteHigh(Activate_Charger);
 		}
 	} else {
 		if (GPIO_ReadInputPin(Selector_LiFe)) {
@@ -76,11 +80,17 @@ void MainLoop(void) {
 			GPIO_WriteLow(Status_LED_Red);
 			GPIO_WriteHigh(Status_LED_Green);
 			SetChargerOutputVolts(9);
+			GPIO_WriteHigh(Activate_Charger);
 		} else {
 			// Status LED off
 			GPIO_WriteHigh(Status_LED_Red);
 			GPIO_WriteHigh(Status_LED_Green);
 			SetChargerOutputVolts(6);
+			GPIO_WriteLow(Activate_Charger);
+			GPIO_WriteHigh(Discharge_0);
+			GPIO_WriteHigh(Discharge_1);
+			GPIO_WriteHigh(Discharge_2);
+			GPIO_WriteHigh(Discharge_3);
 		}
 	}
 

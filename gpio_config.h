@@ -3,6 +3,8 @@
 #include "stm8s_gpio.h"
 
 #define LED_4S               GPIOA, (GPIO_Pin_TypeDef)GPIO_PIN_3
+#define ADC_TotalCurrent     ADC1_CHANNEL_0
+#define ADC_TotalVoltage     ADC1_CHANNEL_1
 #define Selector_2A          GPIOB, (GPIO_Pin_TypeDef)GPIO_PIN_2
 #define LED_1S               GPIOB, (GPIO_Pin_TypeDef)GPIO_PIN_5
 #define LED_2S               GPIOB, (GPIO_Pin_TypeDef)GPIO_PIN_6

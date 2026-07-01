@@ -26,5 +26,10 @@ for key, value in ioc8["cfg"].items():
 		continue
 	port = section[1]
 	gpio = int(section[2:])
+	signal = ioc8["cfg"].get(f"P{port}{gpio}.Signal", "")
 	if option == "GPIO_Label":
-		print(f"#define {value:20s} GPIO{port}, (GPIO_Pin_TypeDef)GPIO_PIN_{gpio}")
+		if signal.find("ADC_IN") == 0:
+			adc_chan = int(signal[len("ADC_IN"):])
+			print(f"#define {value:20s} ADC1_CHANNEL_{adc_chan}")
+		else:
+			print(f"#define {value:20s} GPIO{port}, (GPIO_Pin_TypeDef)GPIO_PIN_{gpio}")
