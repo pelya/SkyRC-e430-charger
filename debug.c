@@ -7,7 +7,8 @@ void DelayBitTime(void) {
 
 	// Bit delay for 9600 baud is 104 nanoseconds
 	// This loop count was calculated experimentally
-	for (uint16_t i = 0; i < 180; i++) {
+	//for (uint16_t i = 0; i < 180; i++) {
+	for (uint16_t i = 0; i < 170; i++) {
 		__asm__("nop");
 	}
 }

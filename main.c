@@ -15,7 +15,6 @@ void main(void) {
 	GPIO_Init(LED_3S, GPIO_MODE_OUT_PP_HIGH_SLOW);
 	GPIO_Init(LED_4S, GPIO_MODE_OUT_PP_HIGH_SLOW);
 	GPIO_Init(Selector_LiFe, GPIO_MODE_IN_PU_NO_IT);
-	GPIO_Init(Selector_2A, GPIO_MODE_IN_PU_NO_IT);
 
 	GPIO_Init(Always_On, GPIO_MODE_OUT_PP_HIGH_SLOW);
 
@@ -61,37 +60,59 @@ void MainLoop(void) {
 	GPIO_WriteLow(Discharge_3S);
 	GPIO_WriteLow(Discharge_4S);
 
-	if (GPIO_ReadInputPin(Selector_2A)) {
+	if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_2A_3A) {
 		if (GPIO_ReadInputPin(Selector_LiFe)) {
-			// Status LED orange
+			// Status LED orange, power on
 			GPIO_WriteLow(Status_LED_Red);
 			GPIO_WriteLow(Status_LED_Green);
 			SetChargerOutputVolts(18);
 			GPIO_WriteHigh(Activate_Charger);
 		} else {
-			// Status LED green
-			GPIO_WriteHigh(Status_LED_Red);
-			GPIO_WriteLow(Status_LED_Green);
+			// Status LED red, power on
+			GPIO_WriteLow(Status_LED_Red);
+			GPIO_WriteHigh(Status_LED_Green);
+			SetChargerOutputVolts(17);
+			GPIO_WriteHigh(Activate_Charger);
+			// Discharge 4S
+			GPIO_WriteLow(LED_4S);
+			GPIO_WriteHigh(Discharge_3S);
+		}
+	} else if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_1A_2A) {
+		if (GPIO_ReadInputPin(Selector_LiFe)) {
+			// Status LED red, power on
+			GPIO_WriteLow(Status_LED_Red);
+			GPIO_WriteHigh(Status_LED_Green);
+			SetChargerOutputVolts(15);
+			GPIO_WriteHigh(Activate_Charger);
+			// Discharge 3S
+			GPIO_WriteLow(LED_3S);
+			GPIO_WriteHigh(Discharge_3S);
+		} else {
+			// Status LED red, power on
+			GPIO_WriteLow(Status_LED_Red);
+			GPIO_WriteHigh(Status_LED_Green);
 			SetChargerOutputVolts(12);
 			GPIO_WriteHigh(Activate_Charger);
+			// Discharge 2S
+			GPIO_WriteLow(LED_2S);
+			GPIO_WriteHigh(Discharge_2S);
 		}
 	} else {
 		if (GPIO_ReadInputPin(Selector_LiFe)) {
-			// Status LED red
+			// Status LED red, power on
 			GPIO_WriteLow(Status_LED_Red);
 			GPIO_WriteHigh(Status_LED_Green);
 			SetChargerOutputVolts(9);
 			GPIO_WriteHigh(Activate_Charger);
+			// Discharge 1S
+			GPIO_WriteLow(LED_1S);
+			GPIO_WriteHigh(Discharge_1S);
 		} else {
-			// Status LED off
+			// Status LED off, power off
 			GPIO_WriteHigh(Status_LED_Red);
 			GPIO_WriteHigh(Status_LED_Green);
 			SetChargerOutputVolts(6);
 			GPIO_WriteLow(Activate_Charger);
-			GPIO_WriteHigh(Discharge_1S);
-			GPIO_WriteHigh(Discharge_2S);
-			GPIO_WriteHigh(Discharge_3S);
-			GPIO_WriteHigh(Discharge_4S);
 		}
 	}
 
@@ -99,6 +120,12 @@ void MainLoop(void) {
 
 	ReadADCValues();
 
+	DebugPrintStr("Sel_2A = ");
+	DebugPrintNumber(ADCValues[ADC_Selector_Current]);
+	DebugPrintStr("\r\n");
+	DebugPrintStr("Sel_LiFe = ");
+	DebugPrintNumber(GPIO_ReadInputPin(Selector_LiFe));
+	DebugPrintStr("\r\n");
 	DebugPrintStr("Current = ");
 	DebugPrintNumber(ADCValues[ADC_TotalCurrent]);
 	DebugPrintStr("\r\n");

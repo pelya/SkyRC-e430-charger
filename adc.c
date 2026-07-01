@@ -76,4 +76,15 @@ void ReadADCValues(void) {
 	while (!ADC1_GetFlagStatus(ADC1_FLAG_EOC)) {}
 	ADCValues[ADC_4S] = ADC1_GetConversionValue();
 	ADC1_ClearFlag(ADC1_FLAG_EOC);
+
+	ADC1_Init(ADC1_CONVERSIONMODE_SINGLE,
+				ADC_Selector_Current,
+				ADC1_PRESSEL_FCPU_D18,
+				ADC1_EXTTRIG_TIM, DISABLE,
+				ADC1_ALIGN_RIGHT,
+				ADC1_SCHMITTTRIG_ALL, DISABLE);
+	ADC1_StartConversion();
+	while (!ADC1_GetFlagStatus(ADC1_FLAG_EOC)) {}
+	ADCValues[ADC_Selector_Current] = ADC1_GetConversionValue();
+	ADC1_ClearFlag(ADC1_FLAG_EOC);
 }
