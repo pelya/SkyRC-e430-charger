@@ -3,6 +3,7 @@
 
 #include "main.h"
 
+#if 0
 
 static uint8_t DisplayNumberData[4];
 static uint8_t DisplayNumberPos = sizeof(DisplayNumberData) * 4;
@@ -76,7 +77,7 @@ static bool DisplayNumberShowLed(void) {
 	return true;
 }
 
-// Show a 4-digit decimal number
+// Show a 4-digit decimal number, it takes exactly 3 seconds
 void DisplayNumber(uint16_t number) {
 	DisplayNumberPos = 0;
 	DisplayNumberData[3] = number % 10;
@@ -87,9 +88,17 @@ void DisplayNumber(uint16_t number) {
 	number /= 10;
 	DisplayNumberData[0] = number % 10;
 
+	// First digit - all LEDs ON
+	GPIO_WriteLow(LED_1S);
+	GPIO_WriteLow(LED_2S);
+	GPIO_WriteLow(LED_3S);
+	GPIO_WriteLow(LED_4S);
+	DelayMicrosec(DELAY_1SEC / 6);
+
 	while (DisplayNumberShowLed()) {
 		DelayMicrosec(DELAY_1SEC / 6);
 	}
-	DelayMicrosec(DELAY_1SEC / 2);
+	DelayMicrosec(DELAY_1SEC / 3);
 }
 
+#endif
