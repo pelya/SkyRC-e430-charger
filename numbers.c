@@ -3,7 +3,7 @@
 
 #include "main.h"
 
-#if 0
+#if !DEBUG_LOGS
 
 static uint8_t DisplayNumberData[4];
 static uint8_t DisplayNumberPos = sizeof(DisplayNumberData) * 4;
@@ -101,4 +101,4 @@ void DisplayNumber(uint16_t number) {
 	DelayMicrosec(DELAY_1SEC / 3);
 }
 
-#endif
+#endif // !DEBUG_LOGS

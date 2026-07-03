@@ -11,7 +11,7 @@ void ChargingStart(void);
 void ChargingLoop(void);
 
 void main(void) {
-	/* Initialize I/Os in Output Mode */
+	// Initialize I/Os in Output Mode
 	GPIO_Init(Status_LED_Red, GPIO_MODE_OUT_PP_HIGH_SLOW);
 	GPIO_Init(Status_LED_Green, GPIO_MODE_OUT_PP_HIGH_SLOW);
 	GPIO_Init(LED_1S, GPIO_MODE_OUT_PP_HIGH_SLOW);
@@ -57,8 +57,7 @@ void ChargingStart(void) {
 	uint16_t TotalVoltage; // in 10 millivolt units
 	uint16_t AverageCellADC;
 	uint16_t CellVoltage_1S, CellVoltage_2S, CellVoltage_3S, CellVoltage_4S; // in 10 millivolt units
-	uint16_t VoltageLimitPerCell;
-	uint16_t LowestCellVoltage; // in 10 millivolt units
+	uint16_t VoltageLimitPerCell; // in 10 millivolt units
 
 	// Discharge resistors can overheat, so we add some extra sleep to cool them
 	SleepSec = 1;
@@ -98,14 +97,14 @@ void ChargingStart(void) {
 
 	ReadADCValues();
 
-	TotalVoltage = (int)ADCValues[ADC_TotalVoltage] * 1680 / ADC_TOTAL_VOLTAGE_16_8V;
+	TotalVoltage = (uint32_t)ADCValues[ADC_TotalVoltage] * 1680 / ADC_TOTAL_VOLTAGE_16_8V;
 
 	AverageCellADC = (ADCValues[ADC_1S] + ADCValues[ADC_2S] + ADCValues[ADC_3S] + ADCValues[ADC_4S]) / 4;
 
-	CellVoltage_1S = TotalVoltage + ((int)ADCValues[ADC_1S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
-	CellVoltage_2S = TotalVoltage + ((int)ADCValues[ADC_2S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
-	CellVoltage_3S = TotalVoltage + ((int)ADCValues[ADC_3S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
-	CellVoltage_4S = TotalVoltage + ((int)ADCValues[ADC_4S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
+	CellVoltage_1S = TotalVoltage / 4 + ((int32_t)ADCValues[ADC_1S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
+	CellVoltage_2S = TotalVoltage / 4 + ((int32_t)ADCValues[ADC_2S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
+	CellVoltage_3S = TotalVoltage / 4 + ((int32_t)ADCValues[ADC_3S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
+	CellVoltage_4S = TotalVoltage / 4 + ((int32_t)ADCValues[ADC_4S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
 
 	ChargingVoltage = TotalVoltage / 100; // convert 10 millivolt units to volts
 
@@ -132,10 +131,10 @@ void ChargingStart(void) {
 		&& CellVoltage_2S <= VoltageLimitPerCell
 		&& CellVoltage_3S <= VoltageLimitPerCell
 		&& CellVoltage_4S <= VoltageLimitPerCell
-		&& CellVoltage_1S > VoltageLimitPerCell - 10
-		&& CellVoltage_2S > VoltageLimitPerCell - 10
-		&& CellVoltage_3S > VoltageLimitPerCell - 10
-		&& CellVoltage_4S > VoltageLimitPerCell - 10) {
+		&& CellVoltage_1S >= VoltageLimitPerCell - 10
+		&& CellVoltage_2S >= VoltageLimitPerCell - 10
+		&& CellVoltage_3S >= VoltageLimitPerCell - 10
+		&& CellVoltage_4S >= VoltageLimitPerCell - 10) {
 			// Charging is finished when every cell is between 3.55 - 3.65 V LiFe / 4.10 - 4.20 V LiPo
 			GPIO_WriteLow(Status_LED_Green);
 	} else {
@@ -153,38 +152,41 @@ void ChargingStart(void) {
 			GPIO_WriteLow(LED_4S);
 		}
 
-		LowestCellVoltage = CellVoltage_1S;
-		LowestCellVoltage = MIN(LowestCellVoltage, CellVoltage_2S);
-		LowestCellVoltage = MIN(LowestCellVoltage, CellVoltage_3S);
-		LowestCellVoltage = MIN(LowestCellVoltage, CellVoltage_4S);
+		VoltageLimitPerCell = MIN(VoltageLimitPerCell, CellVoltage_1S + 10);
+		VoltageLimitPerCell = MIN(VoltageLimitPerCell, CellVoltage_2S + 10);
+		VoltageLimitPerCell = MIN(VoltageLimitPerCell, CellVoltage_3S + 10);
+		VoltageLimitPerCell = MIN(VoltageLimitPerCell, CellVoltage_4S + 10);
 
-		if (CellVoltage_1S >= LowestCellVoltage + 10) {
+		if (CellVoltage_1S > VoltageLimitPerCell) {
 			//GPIO_WriteHigh(Discharge_1S);
 			GPIO_WriteHigh(LED_1S);
 		}
-		if (CellVoltage_2S >= LowestCellVoltage + 10) {
+		if (CellVoltage_2S > VoltageLimitPerCell) {
 			//GPIO_WriteHigh(Discharge_2S);
 			GPIO_WriteHigh(LED_2S);
 		}
-		if (CellVoltage_3S >= LowestCellVoltage + 10) {
+		if (CellVoltage_3S > VoltageLimitPerCell) {
 			//GPIO_WriteHigh(Discharge_3S);
 			GPIO_WriteHigh(LED_3S);
 		}
-		if (CellVoltage_4S >= LowestCellVoltage + 10) {
+		if (CellVoltage_4S > VoltageLimitPerCell) {
 			//GPIO_WriteHigh(Discharge_4S);
 			GPIO_WriteHigh(LED_4S);
 		}
 	}
 
+#if !DEBUG_LOGS
 	// Display battery voltage
-	//DisplayNumber(ADCValues[ADC_TotalCurrent] * 1680 / ADC_TOTAL_VOLTAGE_16_8V);
-	//ChargingLoopCounter -= 30; // Substitute 3 seconds spent inside DisplayNumber()
+	DisplayNumber(TotalVoltage);
+	ChargingLoopCounter -= 30; // Substitute 3 seconds spent inside DisplayNumber()
+#endif // !DEBUG_LOGS
 
-	DebugPrintStr("Sel_2A = ");
-	DebugPrintNumber(ADCValues[ADC_Selector_Current]);
-	DebugPrintStr(" Sel_LiFe = ");
-	DebugPrintNumber(GPIO_ReadInputPin(Selector_LiFe));
-	DebugPrintStr("\r\n");
+#if DEBUG_LOGS
+	//DebugPrintStr("Sel_2A = ");
+	//DebugPrintNumber(ADCValues[ADC_Selector_Current]);
+	//DebugPrintStr(" Sel_LiFe = ");
+	//DebugPrintNumber(GPIO_ReadInputPin(Selector_LiFe));
+	//DebugPrintStr("\r\n");
 
 	DebugPrintStr("Voltage ");
 	DebugPrintNumber(ADCValues[ADC_TotalVoltage]);
@@ -193,9 +195,11 @@ void ChargingStart(void) {
 	DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
 
-	DebugPrintStr("AverageCellADC ");
-	DebugPrintNumber(AverageCellADC);
+	DebugPrintStr("VoltageLimitPerCell ");
+	DebugPrintNumber(VoltageLimitPerCell);
+	DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
+
 	DebugPrintStr("1S ");
 	DebugPrintNumber(ADCValues[ADC_1S]);
 	DebugPrintStr(" = ");
@@ -223,7 +227,7 @@ void ChargingStart(void) {
 	DebugPrintNumber(CellVoltage_4S);
 	DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
-
+#endif // DEBUG_LOGS
 }
 
 void ChargingLoop(void) {
@@ -232,17 +236,19 @@ void ChargingLoop(void) {
 
 		ReadADCValues();
 
-		TotalCurrent = ADCValues[ADC_TotalCurrent] * 1000 / ADC_TOTAL_CURRENT_1A;
+		TotalCurrent = (uint32_t)ADCValues[ADC_TotalCurrent] * 1000 / ADC_TOTAL_CURRENT_1A;
 
 		//ChargingVoltage = MIN(ChargingVoltage, GPIO_ReadInputPin(Selector_LiFe) ? 15 : 17);
 		//SetChargerOutputVolts(ChargingVoltage);
 
+#if DEBUG_LOGS
 		DebugPrintStr("Current ");
 		DebugPrintNumber(ADCValues[ADC_TotalCurrent]);
 		DebugPrintStr(" = ");
 		DebugPrintNumber(TotalCurrent);
 		DebugPrintStr(" mA");
 		DebugPrintStr("\r\n");
+#endif // DEBUG_LOGS
 	}
 
 	// Blink discharging LEDs

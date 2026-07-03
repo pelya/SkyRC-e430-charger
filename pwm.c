@@ -49,6 +49,8 @@ void PWMSetup(void) {
 }
 
 void SetChargerOutputVolts(uint8_t volts) {
+	// PWM coefficients measured by hand using a voltmeter and a 80 Ohm resistor between red/black banana sockets
+	// Without the resistor the voltage instantly jumps to 18 volts on any PWM setting
 	if (volts <= 6) {
 		// Minimum = 6 volts
 		TIM1_SetCompare1(0);

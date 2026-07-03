@@ -117,6 +117,8 @@ Solder the connector wire to the contact point closest to the SWM pinhole:
 Connect UART adapter RX pin to the debug wire, and GND pin to the AGND pinhole,
 then set your UART adapter baudrate to 9600 baud and encoding to 8N1.
 
+Enable `DEBUG_LOGS` option inside [main.h](main.h), then rebuild and flash the debug firmware.
+
 UART logs are written using bit-banging GPIO PD4, so if logs are garbled,
 change delay time inside function `DelayBitTime` in [debug.c](debug.c).
 

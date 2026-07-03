@@ -3,14 +3,16 @@
 
 #include "main.h"
 
+#if DEBUG_LOGS
+
 void DelayBitTime(void) {
 	// Bit delay for 9600 baud is 104 nanoseconds
 	// This loop count was calculated experimentally,
 	// the compiler can randomly optimize this loop
 	// so you need to test both delays 170 and 180.
 
-	//for (uint16_t i = 0; i < 180; i++) {
-	for (uint16_t i = 0; i < 170; i++) {
+	for (uint16_t i = 0; i < 180; i++) {
+	//for (uint16_t i = 0; i < 170; i++) {
 		__asm__("nop");
 	}
 }
@@ -59,3 +61,6 @@ void DebugPrintNumber(uint16_t number) {
 	}
 	DebugPrintChar('0' + number % 10);
 }
+
+#endif // DEBUG_LOGS
+
