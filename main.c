@@ -5,7 +5,8 @@
 #include "main.h"
 
 uint16_t ChargingLoopCounter = 0;
-uint8_t ChargingVoltage = 6;
+// Charging voltage is between 6 and 18 volts, with value 5 meaning - do not raise the voltage because the battery is over-discharged
+uint8_t ChargingVoltage = 5;
 
 void ChargingStart(void);
 void ChargingLoop(void);
@@ -106,23 +107,25 @@ void ChargingStart(void) {
 	CellVoltage_3S = TotalVoltage / 4 + ((int32_t)ADCValues[ADC_3S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
 	CellVoltage_4S = TotalVoltage / 4 + ((int32_t)ADCValues[ADC_4S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
 
-	ChargingVoltage = TotalVoltage / 100; // convert 10 millivolt units to volts
-
 	if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_2A_3A) {
-		// 3A: 15 seconds charge, 1 second sleep + 1 second sleep for each discharging cell, higher voltage setting.
-		ChargingLoopCounter = 150;
-		ChargingVoltage += 3;
-	} else if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_1A_2A) {
-		// 2A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
+		// 3A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell, higher voltage setting.
 		ChargingLoopCounter = 100;
-		ChargingVoltage += 2;
+	} else if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_1A_2A) {
+		// 2A: 7 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
+		ChargingLoopCounter = 70;
 	} else {
 		// 1A: 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
 		ChargingLoopCounter = 50;
-		ChargingVoltage += 1;
 	}
 
-	ChargingVoltage = MIN(ChargingVoltage, GPIO_ReadInputPin(Selector_LiFe) ? 15 : 17);
+	//ChargingVoltage = MIN(ChargingVoltage, GPIO_ReadInputPin(Selector_LiFe) ? 15 : 17);
+	if (TotalVoltage < 1000) {
+		// The battery is absent or disacharged below 10 volts - set charging voltage to minimum
+		ChargingVoltage = 5;
+	} else if (ChargingVoltage <= 5) {
+		ChargingVoltage = 6;
+	}
+
 	SetChargerOutputVolts(ChargingVoltage);
 
 	VoltageLimitPerCell = GPIO_ReadInputPin(Selector_LiFe) ? 365 : 420; // 3.65 V LiFe / 4.20 V LiPo
@@ -143,13 +146,21 @@ void ChargingStart(void) {
 			&& CellVoltage_3S < VoltageLimitPerCell
 			&& CellVoltage_4S < VoltageLimitPerCell) {
 			// Activate the charger
-			//GPIO_WriteHigh(Activate_Charger);
+			GPIO_WriteHigh(Activate_Charger);
 			GPIO_WriteLow(Status_LED_Red);
-			// Cells LEDs activate
-			GPIO_WriteLow(LED_1S);
-			GPIO_WriteLow(LED_2S);
-			GPIO_WriteLow(LED_3S);
-			GPIO_WriteLow(LED_4S);
+			// Cells LEDs activate, do not show LEDs below 0.5 volts
+			if (CellVoltage_1S > 50) {
+				GPIO_WriteLow(LED_1S);
+			}
+			if (CellVoltage_2S > 50) {
+				GPIO_WriteLow(LED_2S);
+			}
+			if (CellVoltage_3S > 50) {
+				GPIO_WriteLow(LED_3S);
+			}
+			if (CellVoltage_4S > 50) {
+				GPIO_WriteLow(LED_4S);
+			}
 		}
 
 		VoltageLimitPerCell = MIN(VoltageLimitPerCell, CellVoltage_1S + 10);
@@ -157,21 +168,20 @@ void ChargingStart(void) {
 		VoltageLimitPerCell = MIN(VoltageLimitPerCell, CellVoltage_3S + 10);
 		VoltageLimitPerCell = MIN(VoltageLimitPerCell, CellVoltage_4S + 10);
 
+		// Only cells that are charged to above 2.5 volts LiFe / 3.0 volts LiPo are discharged.
+		VoltageLimitPerCell = MAX(VoltageLimitPerCell, GPIO_ReadInputPin(Selector_LiFe) ? 250 : 300);
+
 		if (CellVoltage_1S > VoltageLimitPerCell) {
-			//GPIO_WriteHigh(Discharge_1S);
-			GPIO_WriteHigh(LED_1S);
+			GPIO_WriteHigh(Discharge_1S);
 		}
 		if (CellVoltage_2S > VoltageLimitPerCell) {
-			//GPIO_WriteHigh(Discharge_2S);
-			GPIO_WriteHigh(LED_2S);
+			GPIO_WriteHigh(Discharge_2S);
 		}
 		if (CellVoltage_3S > VoltageLimitPerCell) {
-			//GPIO_WriteHigh(Discharge_3S);
-			GPIO_WriteHigh(LED_3S);
+			GPIO_WriteHigh(Discharge_3S);
 		}
 		if (CellVoltage_4S > VoltageLimitPerCell) {
-			//GPIO_WriteHigh(Discharge_4S);
-			GPIO_WriteHigh(LED_4S);
+			GPIO_WriteHigh(Discharge_4S);
 		}
 	}
 
@@ -188,45 +198,50 @@ void ChargingStart(void) {
 	//DebugPrintNumber(GPIO_ReadInputPin(Selector_LiFe));
 	//DebugPrintStr("\r\n");
 
-	DebugPrintStr("Voltage ");
-	DebugPrintNumber(ADCValues[ADC_TotalVoltage]);
-	DebugPrintStr(" = ");
+	DebugPrintStr("BatVolt ");
+	//DebugPrintNumber(ADCValues[ADC_TotalVoltage]);
+	//DebugPrintChar('=');
 	DebugPrintNumber(TotalVoltage);
 	DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
 
-	DebugPrintStr("VoltageLimitPerCell ");
-	DebugPrintNumber(VoltageLimitPerCell);
-	DebugPrintStr("0 mV");
+	//DebugPrintStr("VoltageLimitPerCell ");
+	//DebugPrintNumber(VoltageLimitPerCell);
+	//DebugPrintStr("0 mV");
+	//DebugPrintStr("\r\n");
+
+	DebugPrintStr("ChgVolt ");
+	DebugPrintNumber(ChargingVoltage);
 	DebugPrintStr("\r\n");
 
 	DebugPrintStr("1S ");
-	DebugPrintNumber(ADCValues[ADC_1S]);
-	DebugPrintStr(" = ");
+	//DebugPrintNumber(ADCValues[ADC_1S]);
+	//DebugPrintChar('=');
 	DebugPrintNumber(CellVoltage_1S);
 	DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
 
 	DebugPrintStr("2S ");
-	DebugPrintNumber(ADCValues[ADC_2S]);
-	DebugPrintStr(" = ");
+	//DebugPrintNumber(ADCValues[ADC_2S]);
+	//DebugPrintChar('=');
 	DebugPrintNumber(CellVoltage_2S);
 	DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
 
 	DebugPrintStr("3S ");
-	DebugPrintNumber(ADCValues[ADC_3S]);
-	DebugPrintStr(" = ");
+	//DebugPrintNumber(ADCValues[ADC_3S]);
+	//DebugPrintChar('=');
 	DebugPrintNumber(CellVoltage_3S);
 	DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
 
 	DebugPrintStr("4S ");
-	DebugPrintNumber(ADCValues[ADC_4S]);
-	DebugPrintStr(" = ");
+	//DebugPrintNumber(ADCValues[ADC_4S]);
+	//DebugPrintChar('=');
 	DebugPrintNumber(CellVoltage_4S);
 	DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
+
 #endif // DEBUG_LOGS
 }
 
@@ -237,16 +252,43 @@ void ChargingLoop(void) {
 		ReadADCValues();
 
 		TotalCurrent = (uint32_t)ADCValues[ADC_TotalCurrent] * 1000 / ADC_TOTAL_CURRENT_1A;
+		if (ChargingVoltage > 5) {
+			if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_2A_3A) {
+				// 3A: 15 seconds charge, 1 second sleep + 1 second sleep for each discharging cell, higher voltage setting.
+				if (TotalCurrent < 2700)
+					ChargingVoltage++;
+				if (TotalCurrent > 3300)
+					ChargingVoltage--;
+			} else if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_1A_2A) {
+				// 2A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
+				if (TotalCurrent < 1700)
+					ChargingVoltage++;
+				if (TotalCurrent > 2300)
+					ChargingVoltage--;
+			} else {
+				// 1A: 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
+				if (TotalCurrent < 700)
+					ChargingVoltage++;
+				if (TotalCurrent > 1300)
+					ChargingVoltage--;
+			}
+    
+			ChargingVoltage = MAX(ChargingVoltage, 6);
+			//ChargingVoltage = MIN(ChargingVoltage, GPIO_ReadInputPin(Selector_LiFe) ? 15 : 17);
+			ChargingVoltage = MIN(ChargingVoltage, 18);
 
-		//ChargingVoltage = MIN(ChargingVoltage, GPIO_ReadInputPin(Selector_LiFe) ? 15 : 17);
-		//SetChargerOutputVolts(ChargingVoltage);
+			SetChargerOutputVolts(ChargingVoltage);
+		}
 
 #if DEBUG_LOGS
-		DebugPrintStr("Current ");
-		DebugPrintNumber(ADCValues[ADC_TotalCurrent]);
-		DebugPrintStr(" = ");
+		DebugPrintStr("Curr ");
+		//DebugPrintNumber(ADCValues[ADC_TotalCurrent]);
+		//DebugPrintChar('=');
 		DebugPrintNumber(TotalCurrent);
 		DebugPrintStr(" mA");
+		DebugPrintStr("\r\n");
+		DebugPrintStr("ChgVolt ");
+		DebugPrintNumber(ChargingVoltage);
 		DebugPrintStr("\r\n");
 #endif // DEBUG_LOGS
 	}

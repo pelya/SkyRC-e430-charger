@@ -84,8 +84,8 @@ shut down power and check the voltage of individual cells,
 in addition to increasing charging voltage:
 
 1A: 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
-2A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
-3A: 15 seconds charge, 1 second sleep + 1 second sleep for each discharging cell, higher voltage setting.
+2A: 7 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
+3A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell, higher voltage setting.
 
 The voltage of the battery is shown using four Cells Equalizer LEDs.
 Each decimal digit of the voltage is shown using the sum of 4 LED labels
