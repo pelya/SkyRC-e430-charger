@@ -7,6 +7,10 @@
 uint16_t ChargingLoopCounter = 0;
 uint8_t ChargingPWM = 0;
 
+// Voltage in 10 millivolt units, 1680 = 16.8 volts
+uint16_t TotalVoltage;
+uint16_t CellVoltage_1S, CellVoltage_2S, CellVoltage_3S, CellVoltage_4S;
+
 void ChargingStart(void);
 void ChargingLoop(void);
 
@@ -49,11 +53,10 @@ void main(void) {
 }
 
 void ChargingStart(void) {
-	uint8_t SleepSec;
-	uint16_t TotalVoltage; // in 10 millivolt units
 	uint16_t AverageCellADC;
-	uint16_t CellVoltage_1S, CellVoltage_2S, CellVoltage_3S, CellVoltage_4S; // in 10 millivolt units
-	uint16_t VoltageLimitPerCell; // in 10 millivolt units
+	uint16_t VoltageLimitPerCell, MaximumCellVoltage; // in 10 millivolt units
+	uint8_t SleepSec;
+	bool Discharging;
 
 	// Discharge resistors can overheat, so we add some extra sleep to cool them
 	SleepSec = 1;
@@ -122,23 +125,55 @@ void ChargingStart(void) {
 
 	TIM1_SetCompare1(ChargingPWM);
 
-	VoltageLimitPerCell = GPIO_ReadInputPin(Selector_LiFe) ? 365 : 420; // 3.65 V LiFe / 4.20 V LiPo
+	MaximumCellVoltage = GPIO_ReadInputPin(Selector_LiFe) ? 365 : 420; // 3.65 V LiFe / 4.20 V LiPo
+	VoltageLimitPerCell = MaximumCellVoltage;
+	Discharging = false;
 
-	if (   CellVoltage_1S <= VoltageLimitPerCell
-		&& CellVoltage_2S <= VoltageLimitPerCell
-		&& CellVoltage_3S <= VoltageLimitPerCell
-		&& CellVoltage_4S <= VoltageLimitPerCell
-		&& CellVoltage_1S >= VoltageLimitPerCell - 10
-		&& CellVoltage_2S >= VoltageLimitPerCell - 10
-		&& CellVoltage_3S >= VoltageLimitPerCell - 10
-		&& CellVoltage_4S >= VoltageLimitPerCell - 10) {
+	if (   CellVoltage_1S <= MaximumCellVoltage
+		&& CellVoltage_2S <= MaximumCellVoltage
+		&& CellVoltage_3S <= MaximumCellVoltage
+		&& CellVoltage_4S <= MaximumCellVoltage
+		&& CellVoltage_1S >= MaximumCellVoltage - 10
+		&& CellVoltage_2S >= MaximumCellVoltage - 10
+		&& CellVoltage_3S >= MaximumCellVoltage - 10
+		&& CellVoltage_4S >= MaximumCellVoltage - 10) {
 			// Charging is finished when every cell is between 3.55 - 3.65 V LiFe / 4.10 - 4.20 V LiPo
 			GPIO_WriteLow(Status_LED_Green);
 	} else {
-		if (   CellVoltage_1S < VoltageLimitPerCell
-			&& CellVoltage_2S < VoltageLimitPerCell
-			&& CellVoltage_3S < VoltageLimitPerCell
-			&& CellVoltage_4S < VoltageLimitPerCell) {
+		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_1S + 10);
+		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_2S + 10);
+		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_3S + 10);
+		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_4S + 10);
+
+		// Only cells that are charged to above 2.5 volts LiFe / 3.0 volts LiPo are discharged.
+		VoltageLimitPerCell = MAX_U16(VoltageLimitPerCell, GPIO_ReadInputPin(Selector_LiFe) ? 250 : 300);
+
+		if (CellVoltage_1S > VoltageLimitPerCell) {
+			GPIO_WriteHigh(Discharge_1S);
+			Discharging = true;
+		}
+		if (CellVoltage_2S > VoltageLimitPerCell) {
+			GPIO_WriteHigh(Discharge_2S);
+			Discharging = true;
+		}
+		if (CellVoltage_3S > VoltageLimitPerCell) {
+			GPIO_WriteHigh(Discharge_3S);
+			Discharging = true;
+		}
+		if (CellVoltage_4S > VoltageLimitPerCell) {
+			GPIO_WriteHigh(Discharge_4S);
+			Discharging = true;
+		}
+
+		if (Discharging) {
+			// Do not overcharge fully charged cells, wait until all cells are balanced
+			MaximumCellVoltage -= 4;
+		}
+
+		if (   CellVoltage_1S < MaximumCellVoltage
+			&& CellVoltage_2S < MaximumCellVoltage
+			&& CellVoltage_3S < MaximumCellVoltage
+			&& CellVoltage_4S < MaximumCellVoltage) {
 			// Activate the charger
 			GPIO_WriteHigh(Activate_Charger);
 			GPIO_WriteLow(Status_LED_Red);
@@ -155,27 +190,6 @@ void ChargingStart(void) {
 			if (CellVoltage_4S > 50) {
 				GPIO_WriteLow(LED_4S);
 			}
-		}
-
-		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_1S + 10);
-		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_2S + 10);
-		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_3S + 10);
-		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_4S + 10);
-
-		// Only cells that are charged to above 2.5 volts LiFe / 3.0 volts LiPo are discharged.
-		VoltageLimitPerCell = MAX_U16(VoltageLimitPerCell, GPIO_ReadInputPin(Selector_LiFe) ? 250 : 300);
-
-		if (CellVoltage_1S > VoltageLimitPerCell) {
-			GPIO_WriteHigh(Discharge_1S);
-		}
-		if (CellVoltage_2S > VoltageLimitPerCell) {
-			GPIO_WriteHigh(Discharge_2S);
-		}
-		if (CellVoltage_3S > VoltageLimitPerCell) {
-			GPIO_WriteHigh(Discharge_3S);
-		}
-		if (CellVoltage_4S > VoltageLimitPerCell) {
-			GPIO_WriteHigh(Discharge_4S);
 		}
 	}
 
