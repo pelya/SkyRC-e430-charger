@@ -47,33 +47,3 @@ void PWMSetup(void) {
 	TIM1_CtrlPWMOutputs(ENABLE);
 	TIM1_Cmd(ENABLE);
 }
-
-void SetChargerOutputVolts(uint8_t volts) {
-	// PWM coefficients measured by hand using a voltmeter and a 80 Ohm resistor between red/black banana sockets
-	// Without the resistor the voltage instantly jumps to 18 volts on any PWM setting
-	if (volts <= 6) {
-		// Minimum = 6 volts
-		TIM1_SetCompare1(0);
-	} else if (volts <= 7) {
-		TIM1_SetCompare1(6);
-	} else if (volts <= 8) {
-		TIM1_SetCompare1(7);
-	} else if (volts <= 9) {
-		TIM1_SetCompare1(8);
-	} else if (volts <= 10) {
-		TIM1_SetCompare1(9);
-	} else if (volts <= 12) {
-		TIM1_SetCompare1(10);
-	} else if (volts <= 13) {
-		TIM1_SetCompare1(11);
-	} else if (volts <= 14) {
-		TIM1_SetCompare1(12);
-	} else if (volts <= 15) {
-		TIM1_SetCompare1(13);
-	} else if (volts <= 17) {
-		TIM1_SetCompare1(14);
-	} else {
-		// Maximum = 18 volts
-		TIM1_SetCompare1(PWM_RESOLUTION);
-	}
-}

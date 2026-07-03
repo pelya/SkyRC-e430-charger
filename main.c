@@ -5,8 +5,7 @@
 #include "main.h"
 
 uint16_t ChargingLoopCounter = 0;
-// Charging voltage is between 6 and 18 volts, with value 5 meaning - do not raise the voltage because the battery is over-discharged
-uint8_t ChargingVoltage = 5;
+uint8_t ChargingPWM = 0;
 
 void ChargingStart(void);
 void ChargingLoop(void);
@@ -38,10 +37,6 @@ void main(void) {
 
 	ClockSetup();
 	PWMSetup();
-
-	// Enable charger circuitry
-	SetChargerOutputVolts(ChargingVoltage);
-	//GPIO_WriteHigh(Activate_Charger);
 
 	while (1) {
 		//DebugPrintStr("\r\n---\r\n");
@@ -118,15 +113,14 @@ void ChargingStart(void) {
 		ChargingLoopCounter = 50;
 	}
 
-	//ChargingVoltage = MIN_U16(ChargingVoltage, GPIO_ReadInputPin(Selector_LiFe) ? 15 : 17);
 	if (TotalVoltage < 1000) {
 		// The battery is absent or disacharged below 10 volts - set charging voltage to minimum
-		ChargingVoltage = 5;
-	} else if (ChargingVoltage <= 5) {
-		ChargingVoltage = 6;
+		ChargingPWM = 0;
+	} else if (ChargingPWM == 0) {
+		ChargingPWM = 1;
 	}
 
-	SetChargerOutputVolts(ChargingVoltage);
+	TIM1_SetCompare1(ChargingPWM);
 
 	VoltageLimitPerCell = GPIO_ReadInputPin(Selector_LiFe) ? 365 : 420; // 3.65 V LiFe / 4.20 V LiPo
 
@@ -210,8 +204,8 @@ void ChargingStart(void) {
 	//DebugPrintStr("0 mV");
 	//DebugPrintStr("\r\n");
 
-	DebugPrintStr("ChgVolt ");
-	DebugPrintNumber(ChargingVoltage);
+	DebugPrintStr("ChgPWM ");
+	DebugPrintNumber(ChargingPWM);
 	DebugPrintStr("\r\n");
 
 	DebugPrintStr("1S ");
@@ -246,38 +240,37 @@ void ChargingStart(void) {
 }
 
 void ChargingLoop(void) {
-	if (ChargingLoopCounter % 10 == 5) {
+	if (ChargingLoopCounter % 5 == 4) {
 		uint16_t TotalCurrent; // In milliAmperes
 
 		ReadADCValues();
 
 		TotalCurrent = (uint32_t)ADCValues[ADC_TotalCurrent] * 1000 / ADC_TOTAL_CURRENT_1A;
-		if (ChargingVoltage > 5) {
+		if (ChargingPWM > 0 && GPIO_ReadInputPin(Activate_Charger)) {
 			if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_2A_3A) {
 				// 3A: 15 seconds charge, 1 second sleep + 1 second sleep for each discharging cell, higher voltage setting.
 				if (TotalCurrent < 2700)
-					ChargingVoltage++;
+					ChargingPWM++;
 				if (TotalCurrent > 3300)
-					ChargingVoltage--;
+					ChargingPWM--;
 			} else if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_1A_2A) {
 				// 2A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
 				if (TotalCurrent < 1700)
-					ChargingVoltage++;
+					ChargingPWM++;
 				if (TotalCurrent > 2300)
-					ChargingVoltage--;
+					ChargingPWM--;
 			} else {
 				// 1A: 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
 				if (TotalCurrent < 700)
-					ChargingVoltage++;
+					ChargingPWM++;
 				if (TotalCurrent > 1300)
-					ChargingVoltage--;
+					ChargingPWM--;
 			}
     
-			ChargingVoltage = MAX_U16(ChargingVoltage, 6);
-			//ChargingVoltage = MIN_U16(ChargingVoltage, GPIO_ReadInputPin(Selector_LiFe) ? 15 : 17);
-			ChargingVoltage = MIN_U16(ChargingVoltage, 18);
+			ChargingPWM = MAX_U16(ChargingPWM, 1);
+			ChargingPWM = MIN_U16(ChargingPWM, 254);
 
-			SetChargerOutputVolts(ChargingVoltage);
+			TIM1_SetCompare1(ChargingPWM);
 		}
 
 #if DEBUG_LOGS
@@ -287,8 +280,8 @@ void ChargingLoop(void) {
 		DebugPrintNumber(TotalCurrent);
 		//DebugPrintStr(" mA");
 		DebugPrintStr("\r\n");
-		DebugPrintStr("ChgVolt ");
-		DebugPrintNumber(ChargingVoltage);
+		DebugPrintStr("ChgPWM ");
+		DebugPrintNumber(ChargingPWM);
 		DebugPrintStr("\r\n");
 #endif // DEBUG_LOGS
 	}

@@ -25,7 +25,7 @@
 #define ADC_SELECTOR_CURRENT_1A_2A 500
 #define ADC_SELECTOR_CURRENT_2A_3A 700
 
-// Defining min/max as functions saves 20 bytes of flash
+// Defining min/max as functions instead of macros saves 20 bytes of flash
 //#define MIN_U16(a,b) (((a)<(b))?(a):(b))
 //#define MAX_U16(a,b) (((a)>(b))?(a):(b))
 uint16_t MIN_U16(uint16_t a, uint16_t b);
@@ -37,7 +37,6 @@ void ReadADCValues(void);
 
 void ClockSetup(void);
 void PWMSetup(void);
-void SetChargerOutputVolts(uint8_t volts);
 
 // Show a 4-digit decimal number
 void DisplayNumber(uint16_t number);
