@@ -249,19 +249,19 @@ void ChargingLoop(void) {
 		if (ChargingPWM > 0 && GPIO_ReadInputPin(Activate_Charger)) {
 			if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_2A_3A) {
 				// 3A: 15 seconds charge, 1 second sleep + 1 second sleep for each discharging cell, higher voltage setting.
-				if (TotalCurrent < 2700)
+				if (TotalCurrent < 3000)
 					ChargingPWM++;
 				if (TotalCurrent > 3300)
 					ChargingPWM--;
 			} else if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_1A_2A) {
 				// 2A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
-				if (TotalCurrent < 1700)
+				if (TotalCurrent < 2000)
 					ChargingPWM++;
 				if (TotalCurrent > 2300)
 					ChargingPWM--;
 			} else {
 				// 1A: 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
-				if (TotalCurrent < 700)
+				if (TotalCurrent < 1000)
 					ChargingPWM++;
 				if (TotalCurrent > 1300)
 					ChargingPWM--;
