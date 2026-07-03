@@ -148,7 +148,7 @@ void ChargingStart(void) {
 			// Activate the charger
 			GPIO_WriteHigh(Activate_Charger);
 			GPIO_WriteLow(Status_LED_Red);
-			// Cells LEDs activate, do not show LEDs below 0.5 volts
+			// Cells LEDs activate, do not show cells below 0.5 volts
 			if (CellVoltage_1S > 50) {
 				GPIO_WriteLow(LED_1S);
 			}
@@ -202,7 +202,7 @@ void ChargingStart(void) {
 	//DebugPrintNumber(ADCValues[ADC_TotalVoltage]);
 	//DebugPrintChar('=');
 	DebugPrintNumber(TotalVoltage);
-	DebugPrintStr("0 mV");
+	//DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
 
 	//DebugPrintStr("VoltageLimitPerCell ");
@@ -218,28 +218,28 @@ void ChargingStart(void) {
 	//DebugPrintNumber(ADCValues[ADC_1S]);
 	//DebugPrintChar('=');
 	DebugPrintNumber(CellVoltage_1S);
-	DebugPrintStr("0 mV");
+	//DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
 
 	DebugPrintStr("2S ");
 	//DebugPrintNumber(ADCValues[ADC_2S]);
 	//DebugPrintChar('=');
 	DebugPrintNumber(CellVoltage_2S);
-	DebugPrintStr("0 mV");
+	//DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
 
 	DebugPrintStr("3S ");
 	//DebugPrintNumber(ADCValues[ADC_3S]);
 	//DebugPrintChar('=');
 	DebugPrintNumber(CellVoltage_3S);
-	DebugPrintStr("0 mV");
+	//DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
 
 	DebugPrintStr("4S ");
 	//DebugPrintNumber(ADCValues[ADC_4S]);
 	//DebugPrintChar('=');
 	DebugPrintNumber(CellVoltage_4S);
-	DebugPrintStr("0 mV");
+	//DebugPrintStr("0 mV");
 	DebugPrintStr("\r\n");
 
 #endif // DEBUG_LOGS
@@ -285,7 +285,7 @@ void ChargingLoop(void) {
 		//DebugPrintNumber(ADCValues[ADC_TotalCurrent]);
 		//DebugPrintChar('=');
 		DebugPrintNumber(TotalCurrent);
-		DebugPrintStr(" mA");
+		//DebugPrintStr(" mA");
 		DebugPrintStr("\r\n");
 		DebugPrintStr("ChgVolt ");
 		DebugPrintNumber(ChargingVoltage);

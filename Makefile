@@ -21,6 +21,7 @@ out/%.rel: %.c $(wildcard *.h)
 
 $(TARGET): $(OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
+	@-objcopy -I ihex -O binary $@ $@.bin && stat -c "firmware size %s limit 8192 bytes" $@.bin
 
 gpio_config.h: charger.ioc8
 	./generate-header-from-ioc8.py $< > $@
