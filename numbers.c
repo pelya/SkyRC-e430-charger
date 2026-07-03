@@ -6,22 +6,22 @@
 #if !DEBUG_LOGS
 
 static uint8_t DisplayNumberData[4];
-static uint8_t DisplayNumberPos = sizeof(DisplayNumberData) * 4;
+static uint8_t DisplayNumberPos = sizeof(DisplayNumberData) * 5;
 
 
 // Show a decimal number, return false when done
-static bool DisplayNumberShowLed(void) {
+bool DisplayNumberStep(void) {
 	// All LEDs off
 	GPIO_WriteHigh(LED_1S);
 	GPIO_WriteHigh(LED_2S);
 	GPIO_WriteHigh(LED_3S);
 	GPIO_WriteHigh(LED_4S);
 
-	if (DisplayNumberPos >= sizeof(DisplayNumberData) * 4 - 1) {
+	if (DisplayNumberPos >= sizeof(DisplayNumberData) * 5 - 1) {
 		return false;
 	}
 
-	if (DisplayNumberPos % 4 == 3) {
+	if (DisplayNumberPos % 5 == 4) {
 		// Next digits - all LEDs ON
 		GPIO_WriteLow(LED_1S);
 		GPIO_WriteLow(LED_2S);
@@ -33,7 +33,7 @@ static bool DisplayNumberShowLed(void) {
 
 	//GPIO_WriteLow(Status_LED_Red);
 
-	switch (DisplayNumberData[DisplayNumberPos / 4]) {
+	switch (DisplayNumberData[DisplayNumberPos / 5]) {
 		case 0:
 			// Zero = all LED off
 			break;
@@ -78,7 +78,7 @@ static bool DisplayNumberShowLed(void) {
 }
 
 // Show a 4-digit decimal number, it takes exactly 3 seconds
-void DisplayNumber(uint16_t number) {
+void DisplayNumberStart(uint16_t number) {
 	DisplayNumberPos = 0;
 	DisplayNumberData[3] = number % 10;
 	number /= 10;
@@ -93,12 +93,6 @@ void DisplayNumber(uint16_t number) {
 	GPIO_WriteLow(LED_2S);
 	GPIO_WriteLow(LED_3S);
 	GPIO_WriteLow(LED_4S);
-	DelayMicrosec(DELAY_1SEC / 6);
-
-	while (DisplayNumberShowLed()) {
-		DelayMicrosec(DELAY_1SEC / 6);
-	}
-	DelayMicrosec(DELAY_1SEC / 3);
 }
 
 #endif // !DEBUG_LOGS

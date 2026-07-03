@@ -182,8 +182,7 @@ void ChargingStart(void) {
 
 #if !DEBUG_LOGS
 	// Display battery voltage
-	DisplayNumber(TotalVoltage);
-	ChargingLoopCounter -= 30; // Substitute 3 seconds spent inside DisplayNumber()
+	DisplayNumberStart(TotalVoltage);
 #endif // !DEBUG_LOGS
 
 #if DEBUG_LOGS
@@ -287,6 +286,15 @@ void ChargingLoop(void) {
 #endif // DEBUG_LOGS
 	}
 
+	ChargingLoopCounter --;
+	DelayMicrosec(DELAY_1SEC / 10);
+
+#if !DEBUG_LOGS
+	if (DisplayNumberStep()) {
+		return;
+	}
+#endif
+
 	if (GPIO_ReadInputPin(Activate_Charger)) {
 		// Cells LEDs activate, do not show cells below 0.5 volts
 		if (CellVoltage_1S > 50) {
@@ -331,7 +339,4 @@ void ChargingLoop(void) {
 			GPIO_WriteHigh(LED_4S);
 		}
 	}
-
-	ChargingLoopCounter --;
-	DelayMicrosec(DELAY_1SEC / 10);
 }
