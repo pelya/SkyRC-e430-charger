@@ -177,19 +177,6 @@ void ChargingStart(void) {
 			// Activate the charger
 			GPIO_WriteHigh(Activate_Charger);
 			GPIO_WriteLow(Status_LED_Red);
-			// Cells LEDs activate, do not show cells below 0.5 volts
-			if (CellVoltage_1S > 50) {
-				GPIO_WriteLow(LED_1S);
-			}
-			if (CellVoltage_2S > 50) {
-				GPIO_WriteLow(LED_2S);
-			}
-			if (CellVoltage_3S > 50) {
-				GPIO_WriteLow(LED_3S);
-			}
-			if (CellVoltage_4S > 50) {
-				GPIO_WriteLow(LED_4S);
-			}
 		}
 	}
 
@@ -298,6 +285,22 @@ void ChargingLoop(void) {
 		DebugPrintNumber(ChargingPWM);
 		DebugPrintStr("\r\n");
 #endif // DEBUG_LOGS
+	}
+
+	if (GPIO_ReadInputPin(Activate_Charger)) {
+		// Cells LEDs activate, do not show cells below 0.5 volts
+		if (CellVoltage_1S > 50) {
+			GPIO_WriteLow(LED_1S);
+		}
+		if (CellVoltage_2S > 50) {
+			GPIO_WriteLow(LED_2S);
+		}
+		if (CellVoltage_3S > 50) {
+			GPIO_WriteLow(LED_3S);
+		}
+		if (CellVoltage_4S > 50) {
+			GPIO_WriteLow(LED_4S);
+		}
 	}
 
 	// Blink discharging LEDs
