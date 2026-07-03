@@ -25,8 +25,11 @@
 #define ADC_SELECTOR_CURRENT_1A_2A 500
 #define ADC_SELECTOR_CURRENT_2A_3A 700
 
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#define MAX(a,b) (((a)>(b))?(a):(b))
+// Defining min/max as functions saves 20 bytes of flash
+//#define MIN_U16(a,b) (((a)<(b))?(a):(b))
+//#define MAX_U16(a,b) (((a)>(b))?(a):(b))
+uint16_t MIN_U16(uint16_t a, uint16_t b);
+uint16_t MAX_U16(uint16_t a, uint16_t b);
 
 // ADC channel values updated by ReadADCValues(), range from 0 to 1023.
 extern uint16_t ADCValues[7];

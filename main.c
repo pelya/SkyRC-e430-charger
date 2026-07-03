@@ -118,7 +118,7 @@ void ChargingStart(void) {
 		ChargingLoopCounter = 50;
 	}
 
-	//ChargingVoltage = MIN(ChargingVoltage, GPIO_ReadInputPin(Selector_LiFe) ? 15 : 17);
+	//ChargingVoltage = MIN_U16(ChargingVoltage, GPIO_ReadInputPin(Selector_LiFe) ? 15 : 17);
 	if (TotalVoltage < 1000) {
 		// The battery is absent or disacharged below 10 volts - set charging voltage to minimum
 		ChargingVoltage = 5;
@@ -163,13 +163,13 @@ void ChargingStart(void) {
 			}
 		}
 
-		VoltageLimitPerCell = MIN(VoltageLimitPerCell, CellVoltage_1S + 10);
-		VoltageLimitPerCell = MIN(VoltageLimitPerCell, CellVoltage_2S + 10);
-		VoltageLimitPerCell = MIN(VoltageLimitPerCell, CellVoltage_3S + 10);
-		VoltageLimitPerCell = MIN(VoltageLimitPerCell, CellVoltage_4S + 10);
+		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_1S + 10);
+		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_2S + 10);
+		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_3S + 10);
+		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_4S + 10);
 
 		// Only cells that are charged to above 2.5 volts LiFe / 3.0 volts LiPo are discharged.
-		VoltageLimitPerCell = MAX(VoltageLimitPerCell, GPIO_ReadInputPin(Selector_LiFe) ? 250 : 300);
+		VoltageLimitPerCell = MAX_U16(VoltageLimitPerCell, GPIO_ReadInputPin(Selector_LiFe) ? 250 : 300);
 
 		if (CellVoltage_1S > VoltageLimitPerCell) {
 			GPIO_WriteHigh(Discharge_1S);
@@ -273,9 +273,9 @@ void ChargingLoop(void) {
 					ChargingVoltage--;
 			}
     
-			ChargingVoltage = MAX(ChargingVoltage, 6);
-			//ChargingVoltage = MIN(ChargingVoltage, GPIO_ReadInputPin(Selector_LiFe) ? 15 : 17);
-			ChargingVoltage = MIN(ChargingVoltage, 18);
+			ChargingVoltage = MAX_U16(ChargingVoltage, 6);
+			//ChargingVoltage = MIN_U16(ChargingVoltage, GPIO_ReadInputPin(Selector_LiFe) ? 15 : 17);
+			ChargingVoltage = MIN_U16(ChargingVoltage, 18);
 
 			SetChargerOutputVolts(ChargingVoltage);
 		}

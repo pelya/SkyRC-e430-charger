@@ -19,3 +19,11 @@ void DelayMicrosec(uint64_t nCount) {
 		//__asm__("nop");
 	}
 }
+
+uint16_t MIN_U16(uint16_t a, uint16_t b) {
+	return (((a)<(b))?(a):(b));
+}
+
+uint16_t MAX_U16(uint16_t a, uint16_t b) {
+	return (((a)>(b))?(a):(b));
+}
