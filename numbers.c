@@ -17,7 +17,13 @@ bool DisplayNumberStep(void) {
 	GPIO_WriteHigh(LED_3S);
 	GPIO_WriteHigh(LED_4S);
 
-	if (DisplayNumberPos >= sizeof(DisplayNumberData) * 5 - 1) {
+	if (DisplayNumberPos == sizeof(DisplayNumberData) * 5 - 1) {
+		// Last digit - briefly turn off all LEDs
+		DisplayNumberPos++;
+		return true;
+	}
+
+	if (DisplayNumberPos >= sizeof(DisplayNumberData) * 5) {
 		return false;
 	}
 
