@@ -6,7 +6,7 @@
 #if !DEBUG_LOGS
 
 static uint8_t DisplayNumberData[4];
-static uint8_t DisplayNumberPos = sizeof(DisplayNumberData) * 5;
+static uint8_t DisplayNumberPos;
 
 
 // Show a decimal number, return false when done

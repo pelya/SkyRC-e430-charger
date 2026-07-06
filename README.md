@@ -58,13 +58,19 @@ stm8flash/stm8flash -c stlinkv2 -p 'stm8s903?3' -w out/main.ihx
 SkyRC e430 has only one charging port - the red/black banana socket.
 Ports 2S/3S/4S have no power, they are only used to discharge individual cells to balance them.
 
+The charging and balancing/discharging individual cells occurs at the same time.
+
 The charger will balance the battery by discharging high-voltage cells until all cells are
 within 0.1 volts between each other.
+
+If any cell reaches 3.55 volts LiFe / 4.1 volts LiPo, the cells are balanced to be
+within 0.05 volts between each other.
+
 Only cells that are charged to above 2.5 volts LiFe / 3.0 volts LiPo are discharged.
+
 If any cell reaches 3.65 volts LiFe / 4.2 volts LiPo, the charger will stop charging
 and will only discharge these cells to balance them.
 
-The charging and balancing/discharging individual cells occurs at the same time.
 There are no error modes - the charger will try to recover batteries discharged to zero volts,
 by always outputting 6 volts to the charging port (the minimum voltage supported by hardware).
 
@@ -74,7 +80,7 @@ continuously for charging cells, and blinking for discharging cells.
 When the charging is inactive, but the cells are balanced, the Status LED is turned off,
 and Cells Equalizer LEDs are blinking for discharging cells.
 
-The charging is finished when all cells are between 3.55 - 3.65 volts LiFe / 4.1 - 4.2 volts LiPo.
+The charging is finished when all cells are between 3.58 - 3.65 volts LiFe / 4.13 - 4.20 volts LiPo.
 When the charging is finished, the Status LED is lit green, Cells Equalizer LEDs are turned off,
 and the charger will sleep for 24 hours, or until the battery is disconnected.
 
@@ -92,6 +98,13 @@ in addition to increasing charging voltage:
 2A: 7 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
 
 3A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
+
+If any cell reaches 3.55 volts LiFe / 4.1 volts LiPo, the charger will switch
+to the 1 ampere charging mode.
+
+Discharging resistors are 12 Ohms each, so at 3.60 volts per cell they are discharging
+with the current of 0.3 amperes per cell, which means that cells charged to 100%
+will stay at roughly the same charge and will not overcharge.
 
 The voltage of the battery is shown using four Cells Equalizer LEDs.
 Each decimal digit of the voltage is shown using the sum of 4 LED labels
