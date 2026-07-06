@@ -9,7 +9,7 @@ The solution: Write your own firmware. Easy!
 
 Only 4S battery configuration is supported. Do not plug 2S/3S battery packs, or they will burn!
 
-If you wish to convert your SkyRC e430 into a simple 18 volts power supply, use branch
+If you wish to convert your SkyRC e430 into a simple 18 volts power supply unit, use branch
 [power-supply](https://github.com/pelya/SkyRC-e430-charger/tree/power-supply).
 
 The circuit board already has contacts for flashing firmware, so you only need to unscrew 4 screws
@@ -19,11 +19,13 @@ while the firmware is flashing - no need to solder them.
 
 ![Firmware flashing contacts](stlink-port.jpg)
 
-Hardware required: PZ1 screwdriver and ST-LINK/V2 programmer. It can program both STM32 and STM8 chips,
+Hardware required: PZ1 or PH1 screwdriver and ST-LINK/V2 programmer.
+
+ST-LINK/V2 programmer can program both STM32 and STM8 chips,
 I bet you did not know this! STM32 uses pins SWCLK and SWDIO, while STM8 uses pins SWIM and NRST.
 
 Software required: SDCC compiler, optionally STM8CubeMX for editing .ioc8 project file,
-and standard utilities like make and gcc.
+and standard utilities like make, git, and gcc.
 
 Build instructions for Debian:
 ```
@@ -94,10 +96,11 @@ Each decimal digit of the voltage is shown using the sum of 4 LED labels
 1S / 2S / 3S / 4S, with zero = all 4 LEDs off.
 All 4 LEDs are briefly on when the next digit is shown.
 
-For example cell #2 is charged to 13.96 volts, the LEDs will light up in this sequence:
+For example the battery is charged to 13.96 volts, the LEDs will light up in this sequence:
 
 |  1S |  2S |  3S |  4S |   Meaning  |
 |-----|-----|-----|-----|------------|
+|  +  |  +  |  +  |  +  | Next digit |
 |  +  |  -  |  -  |  -  |      1     |
 |  +  |  +  |  +  |  +  | Next digit |
 |  -  |  -  |  +  |  -  |      3     |
@@ -106,6 +109,9 @@ For example cell #2 is charged to 13.96 volts, the LEDs will light up in this se
 |  +  |  +  |  +  |  +  | Next digit |
 |  -  |  +  |  -  |  +  |    6=2+4   |
 
+
+.
+=================================================================
 
 SkyRC e430 uses STM8S903K3 8-bit CPU, and no other digital components.
 

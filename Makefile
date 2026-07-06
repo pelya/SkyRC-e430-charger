@@ -15,7 +15,7 @@ TARGET = out/main.ihx
 
 all: $(TARGET) stm8flash/stm8flash
 
-out/%.rel: %.c $(wildcard *.h)
+out/%.rel: %.c $(wildcard *.h) stm8s-sdcc/inc/stm8s.h
 	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -35,5 +35,5 @@ flash: $(TARGET) stm8flash/stm8flash
 stm8flash/stm8flash: stm8flash/Makefile
 	$(MAKE) -C stm8flash
 
-stm8flash/Makefile stm8s-sdcc/src/stm8s_gpio.c:
+stm8flash/Makefile stm8s-sdcc/inc/stm8s.h:
 	git submodule update --init
