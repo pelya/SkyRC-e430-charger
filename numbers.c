@@ -5,44 +5,14 @@
 
 #if !DEBUG_LOGS
 
-static uint8_t DisplayNumberData[4];
 static uint8_t DisplayNumberPos;
+static uint16_t DisplayNumberData;
 
-
-// Show a decimal number, return false when done
-bool DisplayNumberStep(void) {
+static void DisplayNumberLEDs(uint16_t number) {
 	// All LEDs off
-	GPIO_WriteHigh(LED_1S);
-	GPIO_WriteHigh(LED_2S);
-	GPIO_WriteHigh(LED_3S);
-	GPIO_WriteHigh(LED_4S);
+	SetAllCellsLEDs(false);
 
-	if (DisplayNumberPos == sizeof(DisplayNumberData) * 5 - 1) {
-		// Last digit - briefly turn off all LEDs
-		DisplayNumberPos++;
-		return true;
-	}
-
-	if (DisplayNumberPos >= sizeof(DisplayNumberData) * 5) {
-		return false;
-	}
-
-	if (DisplayNumberPos % 5 == 4) {
-		// Next digits - all LEDs ON
-		GPIO_WriteLow(LED_1S);
-		GPIO_WriteLow(LED_2S);
-		GPIO_WriteLow(LED_3S);
-		GPIO_WriteLow(LED_4S);
-		DisplayNumberPos++;
-		return true;
-	}
-
-	//GPIO_WriteLow(Status_LED_Red);
-
-	switch (DisplayNumberData[DisplayNumberPos / 5]) {
-		case 0:
-			// Zero = all LED off
-			break;
+	switch (number) {
 		case 1:
 			GPIO_WriteLow(LED_1S);
 			break;
@@ -78,27 +48,50 @@ bool DisplayNumberStep(void) {
 			GPIO_WriteLow(LED_4S);
 			break;
 	}
+}
 
-	DisplayNumberPos++;
+// Show a decimal number, return false when done
+bool DisplayNumberStep(uint16_t number) {
+	// All LEDs off
+	SetAllCellsLEDs(false);
+
+	if (DisplayNumberPos >= 21) {
+		return false;
+	}
+
+	DisplayNumberPos += 1;
+
+	// Next digits - all LEDs ON
+	SetAllCellsLEDs(true);
+
+	if (DisplayNumberPos == 1) {
+		DisplayNumberData = number / 1000;
+		return true;
+	}
+	if (DisplayNumberPos == 6) {
+		DisplayNumberData = number / 100;
+		return true;
+	}
+	if (DisplayNumberPos == 11) {
+		DisplayNumberData = number / 10;
+		return true;
+	}
+	if (DisplayNumberPos == 16) {
+		DisplayNumberData = number;
+		return true;
+	}
+
+	DisplayNumberData %= 10;
+
+	DisplayNumberLEDs(DisplayNumberData);
+
 	return true;
 }
 
 // Show a 4-digit decimal number, it takes exactly 3 seconds
 void DisplayNumberStart(uint16_t number) {
 	DisplayNumberPos = 0;
-	DisplayNumberData[3] = number % 10;
-	number /= 10;
-	DisplayNumberData[2] = number % 10;
-	number /= 10;
-	DisplayNumberData[1] = number % 10;
-	number /= 10;
-	DisplayNumberData[0] = number % 10;
-
-	// First digit - all LEDs ON
-	GPIO_WriteLow(LED_1S);
-	GPIO_WriteLow(LED_2S);
-	GPIO_WriteLow(LED_3S);
-	GPIO_WriteLow(LED_4S);
+	DisplayNumberStep(number);
 }
 
 #endif // !DEBUG_LOGS

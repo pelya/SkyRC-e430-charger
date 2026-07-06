@@ -11,8 +11,8 @@ void DelayBitTime(void) {
 	// the compiler can randomly optimize this loop
 	// so you need to test both delays 170 and 180.
 
-	for (uint16_t i = 0; i < 180; i++) {
-	//for (uint16_t i = 0; i < 170; i++) {
+	for (uint16_t i = 0; i < 180; i += 1) {
+	//for (uint16_t i = 0; i < 170; i += 1) {
 		__asm__("nop");
 	}
 }
@@ -24,7 +24,7 @@ void DebugPrintChar(char data) {
 	DelayBitTime();
 
 	// 2. Data Bits (8-bits, LSB first)
-	for (uint8_t i = 0; i < 8; i++) {
+	for (uint8_t i = 0; i < 8; i += 1) {
 		if ((data >> i) & 0x01) {
 			GPIO_WriteHigh(Debug_UART);
 		} else {
@@ -42,7 +42,7 @@ void DebugPrintChar(char data) {
 void DebugPrintStr(const char *str) {
 	while (str[0]) {
 		DebugPrintChar(str[0]);
-		str++;
+		str += 1;
 	}
 }
 

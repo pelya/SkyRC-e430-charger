@@ -76,16 +76,16 @@ void ChargingStart(void) {
 	// Discharge resistors can overheat, so we add some extra sleep to cool them
 	SleepSec = 1;
 	if (GPIO_ReadInputPin(Discharge_1S)) {
-		SleepSec++;
+		SleepSec += 1;
 	}
 	if (GPIO_ReadInputPin(Discharge_2S)) {
-		SleepSec++;
+		SleepSec += 1;
 	}
 	if (GPIO_ReadInputPin(Discharge_3S)) {
-		SleepSec++;
+		SleepSec += 1;
 	}
 	if (GPIO_ReadInputPin(Discharge_4S)) {
-		SleepSec++;
+		SleepSec += 1;
 	}
 
 	// Deactivate charger
@@ -99,10 +99,7 @@ void ChargingStart(void) {
 	// Red status LED off
 	GPIO_WriteHigh(Status_LED_Red);
 	// Cells LEDs off
-	GPIO_WriteHigh(LED_1S);
-	GPIO_WriteHigh(LED_2S);
-	GPIO_WriteHigh(LED_3S);
-	GPIO_WriteHigh(LED_4S);
+	SetAllCellsLEDs(false);
 
 	// Sleep to allow charging circuit to drop excess voltage and re-balance voltage
 	// of individuial cells after discharge resistors are turned off.
@@ -135,7 +132,7 @@ void ChargingStart(void) {
 		GPIO_WriteLow(Status_LED_Green);
 		ChargingMode = CHARGING_FINISHED;
 		ChargingLoopCounter = 50;
-		ChargingFinishedCounter--;
+		ChargingFinishedCounter -= 1;
 
 #if !DEBUG_LOGS
 		// Display battery voltage
@@ -298,21 +295,21 @@ void ChargingLoop(void) {
 		if (ChargingMode == REGULAR_CHARGING && ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_2A_3A) {
 			// 3A: 15 seconds charge, 1 second sleep + 1 second sleep for each discharging cell, higher voltage setting.
 			if (TotalCurrent < 3000)
-				ChargingPWM++;
+				ChargingPWM += 1;
 			if (TotalCurrent > 3100)
-				ChargingPWM--;
+				ChargingPWM -= 1;
 		} else if (ChargingMode == REGULAR_CHARGING && ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_1A_2A) {
 			// 2A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
 			if (TotalCurrent < 2000)
-				ChargingPWM++;
+				ChargingPWM += 1;
 			if (TotalCurrent > 2100)
-				ChargingPWM--;
+				ChargingPWM -= 1;
 		} else if (ChargingMode == REGULAR_CHARGING || ChargingMode == SLOW_CAREFUL_CHARGING) {
 			// 1A: 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
 			if (TotalCurrent < 900)
-				ChargingPWM++;
+				ChargingPWM += 1;
 			if (TotalCurrent > 1000)
-				ChargingPWM--;
+				ChargingPWM -= 1;
 		}
 
 		ChargingPWM = MAX_U16(ChargingPWM, 1);
@@ -333,11 +330,11 @@ void ChargingLoop(void) {
 #endif // DEBUG_LOGS
 	}
 
-	ChargingLoopCounter --;
+	ChargingLoopCounter -= 1;
 	DelayMicrosec(DELAY_1SEC / 10);
 
 #if !DEBUG_LOGS
-	if (DisplayNumberStep()) {
+	if (DisplayNumberStep(TotalVoltage)) {
 		return;
 	}
 #endif
@@ -359,31 +356,16 @@ void ChargingLoop(void) {
 	}
 
 	// Blink discharging LEDs
-	if (ChargingLoopCounter % 2 == 0) {
-		if (GPIO_ReadInputPin(Discharge_1S)) {
-			GPIO_WriteLow(LED_1S);
-		}
-		if (GPIO_ReadInputPin(Discharge_2S)) {
-			GPIO_WriteLow(LED_2S);
-		}
-		if (GPIO_ReadInputPin(Discharge_3S)) {
-			GPIO_WriteLow(LED_3S);
-		}
-		if (GPIO_ReadInputPin(Discharge_4S)) {
-			GPIO_WriteLow(LED_4S);
-		}
-	} else {
-		if (GPIO_ReadInputPin(Discharge_1S)) {
-			GPIO_WriteHigh(LED_1S);
-		}
-		if (GPIO_ReadInputPin(Discharge_2S)) {
-			GPIO_WriteHigh(LED_2S);
-		}
-		if (GPIO_ReadInputPin(Discharge_3S)) {
-			GPIO_WriteHigh(LED_3S);
-		}
-		if (GPIO_ReadInputPin(Discharge_4S)) {
-			GPIO_WriteHigh(LED_4S);
-		}
+	if (GPIO_ReadInputPin(Discharge_1S)) {
+		GPIO_WriteReverse(LED_1S);
+	}
+	if (GPIO_ReadInputPin(Discharge_2S)) {
+		GPIO_WriteReverse(LED_2S);
+	}
+	if (GPIO_ReadInputPin(Discharge_3S)) {
+		GPIO_WriteReverse(LED_3S);
+	}
+	if (GPIO_ReadInputPin(Discharge_4S)) {
+		GPIO_WriteReverse(LED_4S);
 	}
 }

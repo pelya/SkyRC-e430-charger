@@ -40,8 +40,10 @@ void PWMSetup(void);
 
 // Show a 4-digit decimal number
 void DisplayNumberStart(uint16_t number);
-bool DisplayNumberStep(void);
+bool DisplayNumberStep(uint16_t number);
 
+// Set all four Cell LEDs, as a separate function to make firmware smaller
+void SetAllCellsLEDs(bool value);
 
 void DelayMicrosec(uint64_t nCount);
 

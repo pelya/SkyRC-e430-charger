@@ -1,4 +1,5 @@
 #include "stm8s.h"
+#include "stm8s_gpio.h"
 
 #include "main.h"
 
@@ -14,7 +15,7 @@ void DelayMicrosec(uint64_t nCount) {
 	// The system clock must be set to 16 MHz
 	nCount = nCount * 54 / 100;
 	while (nCount != 0) {
-		nCount--;
+		nCount -= 1;
 		// We don't need nop instruction here, decreasing 64-bit number is already slow
 		//__asm__("nop");
 	}
@@ -26,4 +27,20 @@ uint16_t MIN_U16(uint16_t a, uint16_t b) {
 
 uint16_t MAX_U16(uint16_t a, uint16_t b) {
 	return (((a)>(b))?(a):(b));
+}
+
+void SetAllCellsLEDs(bool value) {
+	if (value) {
+		// All LEDs ON
+		GPIO_WriteLow(LED_1S);
+		GPIO_WriteLow(LED_2S);
+		GPIO_WriteLow(LED_3S);
+		GPIO_WriteLow(LED_4S);
+	} else {
+		// All LEDs off
+		GPIO_WriteHigh(LED_1S);
+		GPIO_WriteHigh(LED_2S);
+		GPIO_WriteHigh(LED_3S);
+		GPIO_WriteHigh(LED_4S);
+	}
 }
