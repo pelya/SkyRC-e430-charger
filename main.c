@@ -6,6 +6,8 @@
 
 uint16_t ChargingLoopCounter = 0;
 uint8_t ChargingPWM = 0;
+// Once the charging is finished, sleep one day or until battery is unplugged
+uint16_t ChargingFinishedCounter = 0;
 
 // Voltage in 10 millivolt units, 1680 = 16.8 volts
 uint16_t TotalVoltage;
@@ -105,6 +107,26 @@ void ChargingStart(void) {
 	CellVoltage_3S = TotalVoltage / 4 + ((int32_t)ADCValues[ADC_3S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
 	CellVoltage_4S = TotalVoltage / 4 + ((int32_t)ADCValues[ADC_4S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
 
+	if (ChargingFinishedCounter > 0) {
+		// Charging finished - sleep 24 hours in 5 second intervals
+		GPIO_WriteLow(Status_LED_Green);
+		ChargingFinishedCounter--;
+		ChargingLoopCounter = 50;
+		if (   CellVoltage_1S <= 50
+			|| CellVoltage_2S <= 50
+			|| CellVoltage_3S <= 50
+			|| CellVoltage_4S <= 50) {
+			// Battery disconnected - restart charging
+			ChargingFinishedCounter = 0;
+		}
+
+#if !DEBUG_LOGS
+		// Display battery voltage
+		DisplayNumberStart(TotalVoltage);
+#endif // !DEBUG_LOGS
+		return;
+	}
+
 	if (ADCValues[ADC_Selector_Current] >= ADC_SELECTOR_CURRENT_2A_3A) {
 		// 3A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell, higher voltage setting.
 		ChargingLoopCounter = 100;
@@ -139,6 +161,9 @@ void ChargingStart(void) {
 		&& CellVoltage_4S >= MaximumCellVoltage - 10) {
 			// Charging is finished when every cell is between 3.55 - 3.65 V LiFe / 4.10 - 4.20 V LiPo
 			GPIO_WriteLow(Status_LED_Green);
+			// Sleep 24 hours in 5 second intervals
+			ChargingFinishedCounter = 43200;
+			ChargingLoopCounter = 50;
 	} else {
 		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_1S + 10);
 		VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_2S + 10);

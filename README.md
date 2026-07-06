@@ -74,8 +74,10 @@ continuously for charging cells, and blinking for discharging cells.
 When the charging is inactive, but the cells are balanced, the Status LED is turned off,
 and Cells Equalizer LEDs are blinking for discharging cells.
 
-When the charging is finished, the Status LED is lit green, Cells Equalizer LEDs are turned off.
 The charging is finished when all cells are between 3.55 - 3.65 volts LiFe / 4.1 - 4.2 volts LiPo.
+When the charging is finished, the Status LED is lit green, Cells Equalizer LEDs are turned off,
+and the charger will sleep for 24 hours, or until the battery is disconnected.
+
 There is no Constant Voltage (CV) charging, because the charger cannot output precise voltage.
 
 When the battery is absent, the Status LED is slowly blinking red, but the charging port is
