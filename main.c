@@ -234,56 +234,17 @@ void ChargingStart(void) {
 #endif // !DEBUG_LOGS
 
 #if DEBUG_LOGS
-	//DebugPrintStr("Sel_2A = ");
-	//DebugPrintNumber(ADCValues[ADC_Selector_Current]);
-	//DebugPrintStr(" Sel_LiFe = ");
-	//DebugPrintNumber(GPIO_ReadInputPin(Selector_LiFe));
-	//DebugPrintStr("\r\n");
+	DebugPrintValue("BatVolt", TotalVoltage);
 
-	DebugPrintStr("BatVolt ");
-	//DebugPrintNumber(ADCValues[ADC_TotalVoltage]);
-	//DebugPrintChar('=');
-	DebugPrintNumber(TotalVoltage);
-	//DebugPrintStr("0 mV");
-	DebugPrintStr("\r\n");
+	DebugPrintValue("ChgPWM", ChargingPWM);
 
-	//DebugPrintStr("VoltageLimitPerCell ");
-	//DebugPrintNumber(VoltageLimitPerCell);
-	//DebugPrintStr("0 mV");
-	//DebugPrintStr("\r\n");
+	DebugPrintValue("1S", CellVoltage_1S);
 
-	DebugPrintStr("ChgPWM ");
-	DebugPrintNumber(ChargingPWM);
-	DebugPrintStr("\r\n");
+	DebugPrintValue("2S", CellVoltage_2S);
 
-	DebugPrintStr("1S ");
-	//DebugPrintNumber(ADCValues[ADC_1S]);
-	//DebugPrintChar('=');
-	DebugPrintNumber(CellVoltage_1S);
-	//DebugPrintStr("0 mV");
-	DebugPrintStr("\r\n");
+	DebugPrintValue("3S", CellVoltage_3S);
 
-	DebugPrintStr("2S ");
-	//DebugPrintNumber(ADCValues[ADC_2S]);
-	//DebugPrintChar('=');
-	DebugPrintNumber(CellVoltage_2S);
-	//DebugPrintStr("0 mV");
-	DebugPrintStr("\r\n");
-
-	DebugPrintStr("3S ");
-	//DebugPrintNumber(ADCValues[ADC_3S]);
-	//DebugPrintChar('=');
-	DebugPrintNumber(CellVoltage_3S);
-	//DebugPrintStr("0 mV");
-	DebugPrintStr("\r\n");
-
-	DebugPrintStr("4S ");
-	//DebugPrintNumber(ADCValues[ADC_4S]);
-	//DebugPrintChar('=');
-	DebugPrintNumber(CellVoltage_4S);
-	//DebugPrintStr("0 mV");
-	DebugPrintStr("\r\n");
-
+	DebugPrintValue("4S", CellVoltage_4S);
 #endif // DEBUG_LOGS
 }
 
@@ -318,15 +279,9 @@ void ChargingLoop(void) {
 		TIM1_SetCompare1(ChargingPWM - 1);
 
 #if DEBUG_LOGS
-		DebugPrintStr("Curr ");
-		//DebugPrintNumber(ADCValues[ADC_TotalCurrent]);
-		//DebugPrintChar('=');
-		DebugPrintNumber(TotalCurrent);
-		//DebugPrintStr(" mA");
-		DebugPrintStr("\r\n");
-		DebugPrintStr("ChgPWM ");
-		DebugPrintNumber(ChargingPWM);
-		DebugPrintStr("\r\n");
+		DebugPrintValue("Curr", TotalCurrent);
+
+		DebugPrintValue("ChgPWM", ChargingPWM);
 #endif // DEBUG_LOGS
 	}
 

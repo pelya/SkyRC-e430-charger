@@ -48,5 +48,5 @@ void SetAllCellsLEDs(bool value);
 void DelayMicrosec(uint64_t nCount);
 
 void DebugPrintChar(char data);
-void DebugPrintStr(const char *str);
 void DebugPrintNumber(uint16_t number);
+void DebugPrintValue(const char *name, uint16_t value);

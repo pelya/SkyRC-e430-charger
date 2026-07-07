@@ -39,13 +39,6 @@ void DebugPrintChar(char data) {
 	DelayBitTime();
 }
 
-void DebugPrintStr(const char *str) {
-	while (str[0]) {
-		DebugPrintChar(str[0]);
-		str += 1;
-	}
-}
-
 void DebugPrintNumber(uint16_t number) {
 	if (number >= 10000) {
 		DebugPrintChar('0' + (number / 10000) % 10);
@@ -62,5 +55,15 @@ void DebugPrintNumber(uint16_t number) {
 	DebugPrintChar('0' + number % 10);
 }
 
-#endif // DEBUG_LOGS
+void DebugPrintValue(const char *name, uint16_t value) {
+	while (name[0]) {
+		DebugPrintChar(name[0]);
+		name += 1;
+	}
+	DebugPrintChar(' ');
+	DebugPrintNumber(value);
+	DebugPrintChar('\r');
+	DebugPrintChar('\n');
+}
 
+#endif // DEBUG_LOGS
