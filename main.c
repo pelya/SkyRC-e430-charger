@@ -162,11 +162,11 @@ void ChargingStart(void) {
 		&& CellVoltage_2S <= MaximumCellVoltage
 		&& CellVoltage_3S <= MaximumCellVoltage
 		&& CellVoltage_4S <= MaximumCellVoltage
-		&& CellVoltage_1S >= MaximumCellVoltage - 7
-		&& CellVoltage_2S >= MaximumCellVoltage - 7
-		&& CellVoltage_3S >= MaximumCellVoltage - 7
-		&& CellVoltage_4S >= MaximumCellVoltage - 7) {
-			// The charging is finished when all cells are between 3.58 - 3.65 volts LiFe / 4.13 - 4.20 volts LiPo.
+		&& CellVoltage_1S >= MaximumCellVoltage - 10
+		&& CellVoltage_2S >= MaximumCellVoltage - 10
+		&& CellVoltage_3S >= MaximumCellVoltage - 10
+		&& CellVoltage_4S >= MaximumCellVoltage - 10) {
+			// The charging is finished when all cells are between 3.55 - 3.65 volts LiFe / 4.10 - 4.20 volts LiPo.
 			GPIO_WriteLow(Status_LED_Green);
 			// Sleep 24 hours in 5 second intervals
 			ChargingMode = CHARGING_FINISHED;
@@ -177,20 +177,20 @@ void ChargingStart(void) {
 	}
 
 	// The charger will balance the battery by discharging high-voltage cells until all cells are
-	// within 0.1 volts between each other.
-	BalanceMargin = 10;
+	// within 0.15 volts between each other.
+	BalanceMargin = 15;
 
-	if (   CellVoltage_1S >= MaximumCellVoltage - 10
-		|| CellVoltage_2S >= MaximumCellVoltage - 10
-		|| CellVoltage_3S >= MaximumCellVoltage - 10
-		|| CellVoltage_4S >= MaximumCellVoltage - 10) {
-		// If any cell reaches 3.55 volts LiFe / 4.1 volts LiPo,
-		// the cells are balanced to be within 0.05 volts between each other,
-		// and the charger will switch to the 1 ampere charging mode.
+	if (   CellVoltage_1S >= MaximumCellVoltage - 20
+		|| CellVoltage_2S >= MaximumCellVoltage - 20
+		|| CellVoltage_3S >= MaximumCellVoltage - 20
+		|| CellVoltage_4S >= MaximumCellVoltage - 20) {
+		// If any cell reaches 3.45 volts LiFe / 4.00 volts LiPo, the cells are balanced to be
+		// within 0.08 volts between each other.
+		// 0.5 ampere charging mode with 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
 		ChargingMode = SLOW_CAREFUL_CHARGING;
-		BalanceMargin = 5;
+		BalanceMargin = 8;
 		ChargingLoopCounter = 50;
-		if (TotalCurrent > 1100) {
+		if (TotalCurrent > 600) {
 			// Reset ChargingPWM from the regular charging mode
 			ChargingPWM = 1;
 		}
@@ -201,7 +201,7 @@ void ChargingStart(void) {
 	VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_3S + BalanceMargin);
 	VoltageLimitPerCell = MIN_U16(VoltageLimitPerCell, CellVoltage_4S + BalanceMargin);
 
-	// Only cells that are charged to above 2.5 volts LiFe / 3.0 volts LiPo are discharged.
+	// Only cells that are charged to above 2.5 volts LiFe / 3.0 volts LiPo are discharged/balanced.
 	VoltageLimitPerCell = MAX_U16(VoltageLimitPerCell, GPIO_ReadInputPin(Selector_LiFe) ? 250 : 300);
 
 	if (CellVoltage_1S > VoltageLimitPerCell) {
@@ -265,11 +265,17 @@ void ChargingLoop(void) {
 				ChargingPWM += 1;
 			if (TotalCurrent > 2100)
 				ChargingPWM -= 1;
-		} else if (ChargingMode == REGULAR_CHARGING || ChargingMode == SLOW_CAREFUL_CHARGING) {
+		} else if (ChargingMode == REGULAR_CHARGING) {
 			// 1A: 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
-			if (TotalCurrent < 900)
+			if (TotalCurrent < 1000)
 				ChargingPWM += 1;
-			if (TotalCurrent > 1000)
+			if (TotalCurrent > 1100)
+				ChargingPWM -= 1;
+		} else if (ChargingMode == SLOW_CAREFUL_CHARGING) {
+			// 0.5 ampere charging mode with 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
+			if (TotalCurrent < 500)
+				ChargingPWM += 1;
+			if (TotalCurrent > 600)
 				ChargingPWM -= 1;
 		}
 

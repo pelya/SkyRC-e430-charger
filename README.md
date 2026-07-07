@@ -61,12 +61,12 @@ Ports 2S/3S/4S have no power, they are only used to discharge individual cells t
 The charging and balancing/discharging individual cells occurs at the same time.
 
 The charger will balance the battery by discharging high-voltage cells until all cells are
-within 0.1 volts between each other.
+within 0.15 volts between each other.
 
-If any cell reaches 3.55 volts LiFe / 4.1 volts LiPo, the cells are balanced to be
-within 0.05 volts between each other.
+If any cell reaches 3.45 volts LiFe / 4.00 volts LiPo, the cells are balanced to be
+within 0.08 volts between each other.
 
-Only cells that are charged to above 2.5 volts LiFe / 3.0 volts LiPo are discharged.
+Only cells that are charged to above 2.5 volts LiFe / 3.0 volts LiPo are discharged/balanced.
 
 If any cell reaches 3.65 volts LiFe / 4.2 volts LiPo, the charger will stop charging
 and will only discharge these cells to balance them.
@@ -80,7 +80,7 @@ continuously for charging cells, and blinking for discharging cells.
 When the charging is inactive, but the cells are balanced, the Status LED is turned off,
 and Cells Equalizer LEDs are blinking for discharging cells.
 
-The charging is finished when all cells are between 3.58 - 3.65 volts LiFe / 4.13 - 4.20 volts LiPo.
+The charging is finished when all cells are between 3.55 - 3.65 volts LiFe / 4.10 - 4.20 volts LiPo.
 When the charging is finished, the Status LED is lit green, Cells Equalizer LEDs are turned off,
 and the charger will sleep for 24 hours, or until the battery is disconnected.
 
@@ -99,8 +99,8 @@ in addition to increasing charging voltage:
 
 3A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
 
-If any cell reaches 3.55 volts LiFe / 4.1 volts LiPo, the charger will switch
-to the 1 ampere charging mode.
+If any cell reaches 3.45 volts LiFe / 4.00 volts LiPo, the charger will switch
+to the 0.5 ampere charging mode with 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
 
 Discharging resistors are 12 Ohms each, so at 3.60 volts per cell they are discharging
 with the current of 0.3 amperes per cell, which means that cells charged to 100%
@@ -125,8 +125,8 @@ For example the battery is charged to 13.96 volts, the LEDs will light up in thi
 |  -  |  +  |  -  |  +  |    6=2+4   |
 
 
-.
-=================================================================
+Notes to developers
+===================
 
 SkyRC e430 uses STM8S903K3 8-bit CPU, and no other digital components.
 
