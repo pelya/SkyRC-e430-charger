@@ -80,7 +80,7 @@ continuously for charging cells, and blinking for discharging cells.
 When the charging is inactive, but the cells are balanced, the Status LED is turned off,
 and Cells Equalizer LEDs are blinking for discharging cells.
 
-The charging is finished when all cells are between 3.55 - 3.65 volts LiFe / 4.10 - 4.20 volts LiPo.
+The charging is finished when all cells are between 3.50 - 3.65 volts LiFe / 4.05 - 4.20 volts LiPo.
 When the charging is finished, the Status LED is lit green, Cells Equalizer LEDs are turned off,
 and the charger will sleep for 24 hours, or until the battery is disconnected.
 
@@ -100,7 +100,7 @@ in addition to increasing charging voltage:
 3A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
 
 If any cell reaches 3.45 volts LiFe / 4.00 volts LiPo, the charger will switch
-to the 0.5 ampere charging mode with 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
+to the 0.4 ampere charging mode with 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
 
 Discharging resistors are 12 Ohms each, so at 3.60 volts per cell they are discharging
 with the current of 0.3 amperes per cell, which means that cells charged to 100%
@@ -138,7 +138,7 @@ Solder the connector wire to the contact point closest to the SWM pinhole:
 ![Debug wire](debug-wire.jpg)
 
 Connect UART adapter RX pin to the debug wire, and GND pin to the AGND pinhole,
-then set your UART adapter baudrate to 9600 baud and encoding to 8N1.
+then set your UART adapter baudrate to 2400 baud and encoding to 8N1.
 
 Enable `DEBUG_LOGS` option inside [main.h](main.h), then rebuild and flash the debug firmware.
 

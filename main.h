@@ -4,7 +4,7 @@
 
 // Uncomment to enable UART debug logs, 9600 baud 8N1
 // This option disables displaying voltage using LEDs because the firmware won't fit the 8KB flash
-//#define DEBUG_LOGS                 1
+#define DEBUG_LOGS                 1
 
 #define DELAY_1SEC                 1000000 // Value for DelayMicrosec()
 #define PWM_RESOLUTION             200 // Bigger PWM resolution means smoother voltage control

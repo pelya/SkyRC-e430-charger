@@ -69,6 +69,7 @@ void main(void) {
 
 void ChargingStart(void) {
 	uint16_t AverageCellADC;
+	uint16_t AverageCellVoltage;
 	uint16_t VoltageLimitPerCell, MaximumCellVoltage; // in 10 millivolt units
 	uint8_t SleepSec;
 	uint8_t BalanceMargin;
@@ -110,14 +111,15 @@ void ChargingStart(void) {
 	TotalVoltage = (uint32_t)ADCValues[ADC_TotalVoltage] * 1680 / ADC_TOTAL_VOLTAGE_16_8V;
 
 	AverageCellADC = (ADCValues[ADC_1S] + ADCValues[ADC_2S] + ADCValues[ADC_3S] + ADCValues[ADC_4S]) / 4;
+	AverageCellVoltage = TotalVoltage / 4;
 
-	CellVoltage_1S = TotalVoltage / 4 + ((int32_t)ADCValues[ADC_1S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
-	CellVoltage_2S = TotalVoltage / 4 + ((int32_t)ADCValues[ADC_2S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
-	CellVoltage_3S = TotalVoltage / 4 + ((int32_t)ADCValues[ADC_3S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
-	CellVoltage_4S = TotalVoltage / 4 + ((int32_t)ADCValues[ADC_4S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
+	CellVoltage_1S = AverageCellVoltage + ((int32_t)ADCValues[ADC_1S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
+	CellVoltage_2S = AverageCellVoltage + ((int32_t)ADCValues[ADC_2S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
+	CellVoltage_3S = AverageCellVoltage + ((int32_t)ADCValues[ADC_3S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
+	CellVoltage_4S = AverageCellVoltage + ((int32_t)ADCValues[ADC_4S] - AverageCellADC) * 100 / ADC_BALANCE_VOLTAGE_1V;
 
 	if (TotalVoltage < 1000) {
-		// The battery is disconnected or disacharged below 10 volts - 
+		// The battery is disconnected or disacharged below 10 volts -
 		// restart charging and set charging voltage to minimum
 		ChargingFinishedCounter = 0;
 		ChargingPWM = 1;
@@ -162,11 +164,11 @@ void ChargingStart(void) {
 		&& CellVoltage_2S <= MaximumCellVoltage
 		&& CellVoltage_3S <= MaximumCellVoltage
 		&& CellVoltage_4S <= MaximumCellVoltage
-		&& CellVoltage_1S >= MaximumCellVoltage - 10
-		&& CellVoltage_2S >= MaximumCellVoltage - 10
-		&& CellVoltage_3S >= MaximumCellVoltage - 10
-		&& CellVoltage_4S >= MaximumCellVoltage - 10) {
-			// The charging is finished when all cells are between 3.55 - 3.65 volts LiFe / 4.10 - 4.20 volts LiPo.
+		&& CellVoltage_1S >= MaximumCellVoltage - 15
+		&& CellVoltage_2S >= MaximumCellVoltage - 15
+		&& CellVoltage_3S >= MaximumCellVoltage - 15
+		&& CellVoltage_4S >= MaximumCellVoltage - 15) {
+			// The charging is finished when all cells are between 3.50 - 3.65 volts LiFe / 4.05 - 4.20 volts LiPo.
 			GPIO_WriteLow(Status_LED_Green);
 			// Sleep 24 hours in 5 second intervals
 			ChargingMode = CHARGING_FINISHED;
@@ -186,11 +188,11 @@ void ChargingStart(void) {
 		|| CellVoltage_4S >= MaximumCellVoltage - 20) {
 		// If any cell reaches 3.45 volts LiFe / 4.00 volts LiPo, the cells are balanced to be
 		// within 0.08 volts between each other.
-		// 0.5 ampere charging mode with 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
+		// 0.4 ampere charging mode with 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
 		ChargingMode = SLOW_CAREFUL_CHARGING;
 		BalanceMargin = 8;
 		ChargingLoopCounter = 50;
-		if (TotalCurrent > 600) {
+		if (TotalCurrent > 450) {
 			// Reset ChargingPWM from the regular charging mode
 			ChargingPWM = 1;
 		}
@@ -272,10 +274,10 @@ void ChargingLoop(void) {
 			if (TotalCurrent > 1100)
 				ChargingPWM -= 1;
 		} else if (ChargingMode == SLOW_CAREFUL_CHARGING) {
-			// 0.5 ampere charging mode with 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
-			if (TotalCurrent < 500)
+			// 0.4 ampere charging mode with 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
+			if (TotalCurrent < 400)
 				ChargingPWM += 1;
-			if (TotalCurrent > 600)
+			if (TotalCurrent > 450)
 				ChargingPWM -= 1;
 		}
 
