@@ -6,13 +6,12 @@
 #if DEBUG_LOGS
 
 void DelayBitTime(void) {
-	// Bit delay for 9600 baud is 104 nanoseconds
+	// Bit delay for 2400 baud is 416 nanoseconds
 	// This loop count was calculated experimentally,
 	// the compiler can randomly optimize this loop
-	// so you need to test both delays 170 and 180.
+	// so you need to test different delays
 
-	for (uint16_t i = 0; i < 180; i += 1) {
-	//for (uint16_t i = 0; i < 170; i += 1) {
+	for (uint16_t i = 0; i < 840; i += 1) {
 		__asm__("nop");
 	}
 }
