@@ -221,6 +221,10 @@ void ChargingStart(void) {
 
 	TIM1_SetCompare1(ChargingPWM - 1);
 
+	// Do not allow cells to exceed maximum voltage, limit to 3.62 V LiFe / 4.17 V LiPo
+	// Cells will rebalance themselves
+	MaximumCellVoltage -= 3;
+
 	if (   CellVoltage_1S < MaximumCellVoltage
 		&& CellVoltage_2S < MaximumCellVoltage
 		&& CellVoltage_3S < MaximumCellVoltage
@@ -236,9 +240,9 @@ void ChargingStart(void) {
 #endif // !DEBUG_LOGS
 
 #if DEBUG_LOGS
-	DebugPrintValue("BatVolt", TotalVoltage);
+	DebugPrintValue("Total", TotalVoltage);
 
-	DebugPrintValue("ChgPWM", ChargingPWM);
+	DebugPrintValue("PWM", ChargingPWM);
 
 	DebugPrintValue("1S", CellVoltage_1S);
 
@@ -289,7 +293,7 @@ void ChargingLoop(void) {
 #if DEBUG_LOGS
 		DebugPrintValue("Curr", TotalCurrent);
 
-		DebugPrintValue("ChgPWM", ChargingPWM);
+		DebugPrintValue("PWM", ChargingPWM);
 #endif // DEBUG_LOGS
 	}
 
