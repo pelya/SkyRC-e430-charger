@@ -356,16 +356,31 @@ void ChargingLoop(void) {
 	}
 
 	// Blink discharging LEDs
-	if (GPIO_ReadInputPin(Discharge_1S)) {
-		GPIO_WriteReverse(LED_1S);
-	}
-	if (GPIO_ReadInputPin(Discharge_2S)) {
-		GPIO_WriteReverse(LED_2S);
-	}
-	if (GPIO_ReadInputPin(Discharge_3S)) {
-		GPIO_WriteReverse(LED_3S);
-	}
-	if (GPIO_ReadInputPin(Discharge_4S)) {
-		GPIO_WriteReverse(LED_4S);
+	if (ChargingLoopCounter % 2 == 0) {
+		if (GPIO_ReadInputPin(Discharge_1S)) {
+			GPIO_WriteLow(LED_1S);
+		}
+		if (GPIO_ReadInputPin(Discharge_2S)) {
+			GPIO_WriteLow(LED_2S);
+		}
+		if (GPIO_ReadInputPin(Discharge_3S)) {
+			GPIO_WriteLow(LED_3S);
+		}
+		if (GPIO_ReadInputPin(Discharge_4S)) {
+			GPIO_WriteLow(LED_4S);
+		}
+	} else {
+		if (GPIO_ReadInputPin(Discharge_1S)) {
+			GPIO_WriteHigh(LED_1S);
+		}
+		if (GPIO_ReadInputPin(Discharge_2S)) {
+			GPIO_WriteHigh(LED_2S);
+		}
+		if (GPIO_ReadInputPin(Discharge_3S)) {
+			GPIO_WriteHigh(LED_3S);
+		}
+		if (GPIO_ReadInputPin(Discharge_4S)) {
+			GPIO_WriteHigh(LED_4S);
+		}
 	}
 }
