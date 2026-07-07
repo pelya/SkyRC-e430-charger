@@ -68,7 +68,7 @@ within 0.08 volts between each other.
 
 Only cells that are charged to above 2.5 volts LiFe / 3.0 volts LiPo are discharged/balanced.
 
-If any cell reaches 3.65 volts LiFe / 4.2 volts LiPo, the charger will stop charging
+If any cell reaches 3.61 V LiFe / 4.16 V LiPo, the charger will stop charging
 and will only discharge these cells to balance them.
 
 There are no error modes - the charger will try to recover batteries discharged to zero volts,
@@ -100,7 +100,7 @@ in addition to increasing charging voltage:
 3A: 10 seconds charge, 1 second sleep + 1 second sleep for each discharging cell.
 
 If any cell reaches 3.45 volts LiFe / 4.00 volts LiPo, the charger will switch
-to the 0.4 ampere charging mode with 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
+to the 1 ampere charging mode with 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
 
 Discharging resistors are 12 Ohms each, so at 3.60 volts per cell they are discharging
 with the current of 0.3 amperes per cell, which means that cells charged to 100%

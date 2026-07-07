@@ -11,7 +11,7 @@ enum ChargingMode_t {
 	REGULAR_CHARGING,
 	SLOW_CAREFUL_CHARGING,
 	BATTERY_NOT_DETECTED_CHARGING,
-	CHARGING_FINISHED,
+	NOT_CHARGING,
 };
 enum ChargingMode_t ChargingMode = REGULAR_CHARGING;
 
@@ -132,7 +132,7 @@ void ChargingStart(void) {
 		// Charging finished - sleep 24 hours in 5 second intervals
 		// Green status LED on
 		GPIO_WriteLow(Status_LED_Green);
-		ChargingMode = CHARGING_FINISHED;
+		ChargingMode = NOT_CHARGING;
 		ChargingLoopCounter = 50;
 		ChargingFinishedCounter -= 1;
 
@@ -171,7 +171,7 @@ void ChargingStart(void) {
 			// The charging is finished when all cells are between 3.50 - 3.65 volts LiFe / 4.05 - 4.20 volts LiPo.
 			GPIO_WriteLow(Status_LED_Green);
 			// Sleep 24 hours in 5 second intervals
-			ChargingMode = CHARGING_FINISHED;
+			ChargingMode = NOT_CHARGING;
 			ChargingLoopCounter = 50;
 			ChargingFinishedCounter = 17280;
 
@@ -192,7 +192,7 @@ void ChargingStart(void) {
 		ChargingMode = SLOW_CAREFUL_CHARGING;
 		BalanceMargin = 8;
 		ChargingLoopCounter = 50;
-		if (TotalCurrent > 450) {
+		if (TotalCurrent > 1100) {
 			// Reset ChargingPWM from the regular charging mode
 			ChargingPWM = 1;
 		}
@@ -221,9 +221,8 @@ void ChargingStart(void) {
 
 	TIM1_SetCompare1(ChargingPWM - 1);
 
-	// Do not allow cells to exceed maximum voltage, limit to 3.62 V LiFe / 4.17 V LiPo
-	// Cells will rebalance themselves
-	MaximumCellVoltage -= 3;
+	// Do not allow cells to exceed maximum voltage, limit to 3.61 V LiFe / 4.16 V LiPo
+	MaximumCellVoltage -= 4;
 
 	if (   CellVoltage_1S < MaximumCellVoltage
 		&& CellVoltage_2S < MaximumCellVoltage
@@ -232,6 +231,8 @@ void ChargingStart(void) {
 		// Activate the charger
 		GPIO_WriteHigh(Activate_Charger);
 		GPIO_WriteLow(Status_LED_Red);
+	} else {
+		ChargingMode = NOT_CHARGING;
 	}
 
 #if !DEBUG_LOGS
@@ -271,17 +272,11 @@ void ChargingLoop(void) {
 				ChargingPWM += 1;
 			if (TotalCurrent > 2100)
 				ChargingPWM -= 1;
-		} else if (ChargingMode == REGULAR_CHARGING) {
+		} else if (ChargingMode == REGULAR_CHARGING || ChargingMode == SLOW_CAREFUL_CHARGING) {
 			// 1A: 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
 			if (TotalCurrent < 1000)
 				ChargingPWM += 1;
 			if (TotalCurrent > 1100)
-				ChargingPWM -= 1;
-		} else if (ChargingMode == SLOW_CAREFUL_CHARGING) {
-			// 0.4 ampere charging mode with 5 second charge, 1 second sleep + 1 second sleep for each discharging cell.
-			if (TotalCurrent < 400)
-				ChargingPWM += 1;
-			if (TotalCurrent > 450)
 				ChargingPWM -= 1;
 		}
 
