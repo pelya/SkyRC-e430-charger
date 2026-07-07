@@ -164,11 +164,11 @@ void ChargingStart(void) {
 		&& CellVoltage_2S <= MaximumCellVoltage
 		&& CellVoltage_3S <= MaximumCellVoltage
 		&& CellVoltage_4S <= MaximumCellVoltage
-		&& CellVoltage_1S >= MaximumCellVoltage - 15
-		&& CellVoltage_2S >= MaximumCellVoltage - 15
-		&& CellVoltage_3S >= MaximumCellVoltage - 15
-		&& CellVoltage_4S >= MaximumCellVoltage - 15) {
-			// The charging is finished when all cells are between 3.50 - 3.65 volts LiFe / 4.05 - 4.20 volts LiPo.
+		&& CellVoltage_1S >= MaximumCellVoltage - 20
+		&& CellVoltage_2S >= MaximumCellVoltage - 20
+		&& CellVoltage_3S >= MaximumCellVoltage - 20
+		&& CellVoltage_4S >= MaximumCellVoltage - 20) {
+			// The charging is finished when all cells are between 3.45 - 3.65 volts LiFe / 4.00 - 4.20 volts LiPo.
 			GPIO_WriteLow(Status_LED_Green);
 			// Sleep 24 hours in 5 second intervals
 			ChargingMode = NOT_CHARGING;
@@ -221,8 +221,8 @@ void ChargingStart(void) {
 
 	TIM1_SetCompare1(ChargingPWM - 1);
 
-	// Do not allow cells to exceed maximum voltage, limit to 3.61 V LiFe / 4.16 V LiPo
-	MaximumCellVoltage -= 4;
+	// Do not allow cells to exceed maximum voltage, limit to 3.60 V LiFe / 4.15 V LiPo
+	MaximumCellVoltage -= 5;
 
 	if (   CellVoltage_1S < MaximumCellVoltage
 		&& CellVoltage_2S < MaximumCellVoltage

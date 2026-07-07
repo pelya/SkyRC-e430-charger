@@ -68,7 +68,7 @@ within 0.08 volts between each other.
 
 Only cells that are charged to above 2.5 volts LiFe / 3.0 volts LiPo are discharged/balanced.
 
-If any cell reaches 3.61 V LiFe / 4.16 V LiPo, the charger will stop charging
+If any cell reaches 3.60 V LiFe / 4.15 V LiPo, the charger will stop charging
 and will only discharge these cells to balance them.
 
 There are no error modes - the charger will try to recover batteries discharged to zero volts,
@@ -80,7 +80,7 @@ continuously for charging cells, and blinking for discharging cells.
 When the charging is inactive, but the cells are balanced, the Status LED is turned off,
 and Cells Equalizer LEDs are blinking for discharging cells.
 
-The charging is finished when all cells are between 3.50 - 3.65 volts LiFe / 4.05 - 4.20 volts LiPo.
+The charging is finished when all cells are between 3.45 - 3.65 volts LiFe / 4.00 - 4.20 volts LiPo.
 When the charging is finished, the Status LED is lit green, Cells Equalizer LEDs are turned off,
 and the charger will sleep for 24 hours, or until the battery is disconnected.
 
